@@ -51,6 +51,7 @@ def loadciudades(catalog, ciudadesfile):
     ciudadesfile = cf.data_dir + ciudadesfile
     input_file = csv.DictReader(open(ciudadesfile, encoding="utf-8"),
                                 delimiter=",")
+                                
     for ciudad in input_file:
         model.addciudad(catalog, ciudad)
     return catalog
@@ -63,9 +64,12 @@ def loadaereopuertos(catalog, aereopuertosfile):
     aereopuertosfile = cf.data_dir + aereopuertosfile
     input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
                                 delimiter=",")
+    f = None
     for aereopuerto in input_file:
+        if f == None:
+            f = aereopuerto
         model.addaereopuerto(catalog, aereopuerto)
-    return catalog
+    return catalog,f
 
 def loadrutas(catalog, rutasfile):
     """

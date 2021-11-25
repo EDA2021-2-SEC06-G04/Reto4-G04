@@ -75,7 +75,7 @@ while True:
         print('Numero de aereopuertos en el grafo dirigido: ' + str(numvertex))
         print('Numero de rutas de vuelo en el grafo dirigido: ' + str(numedges))
         print('El total de ciudades es de ' + str(mp.size(catalog['ciudades'])))
-        primeraereopuerto = me.getValue(mp.get(catalog['IATA'],lt.firstElement(mp.keySet(catalog['IATA']))))
+        primeraereopuerto = controller.loadaereopuertos(catalog, aereopuertosfile)[1]
         print('El primer aereopueto cargado es el de ' + primeraereopuerto['Name'] + ' de la ciudad de ' + primeraereopuerto['City'] + ' de ' + primeraereopuerto['Country'] + ' de latitud ' + primeraereopuerto['Latitude'] + ' y longitud ' + primeraereopuerto['Longitude'] + '.\n')
         ultimaciudad = me.getValue(mp.get(catalog['ciudadesnombre'],lt.lastElement(mp.keySet(catalog['ciudadesnombre']))))
         ultimaciudad = lt.lastElement(ultimaciudad)

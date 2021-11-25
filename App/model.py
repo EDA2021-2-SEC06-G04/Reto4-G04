@@ -59,12 +59,23 @@ def newcatalog():
                     }
 
         analyzer['NameAereopuertos'] = mp.newMap(maptype='PROBING',numelements=10000)
+
         analyzer['IATA'] = mp.newMap(maptype='PROBING',numelements=10000)
+
         analyzer['dirigido'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
                                               size=5000,comparefunction=comparerutas)
         analyzer['ciudades'] = mp.newMap(maptype='PROBING',numelements=9000)
         analyzer['ciudadesnombre'] = mp.newMap(maptype='PROBING',numelements=9000)
+
+        analyzer['routes'] = mp.newMap(numelements=9076,
+                                  maptype = 'PROBING')
+
+        analyzer['bigrafo'] = gr.newGraph(datastructure = 'ADJ_LIST',
+                                      directed = True,
+                                      size = 9076,
+                                      comparefunction = compareStopIds)
+
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -90,6 +101,33 @@ def addciudad(catalog,ciudad):
     lt.addLast(me.getValue(mp.get(catalog['ciudadesnombre'],ciudad['city'])),ciudad)
     return catalog
 
+
+
+def mp_add_route (analyzer: dict, departure: str, destination:str, distance: float) -> None:
+    
+    mp_routes = analyzer['routes']
+    exists = mp.contains(mp_routes, departure)
+
+    if exists:
+
+        mp_destinatios = mp.get(mp_routes, departure)['value']
+        mp.put(mp_destinatios, destination, distance)
+
+    else:
+        new_mp_destinatios = mp.newMap(maptype = 'PROBING')
+        mp.put(new_mp_destinatios, destination, distance)
+        mp.put(mp_routes, departure, new_mp_destinatios)
+
+
+def add_airport (analyzer: dict, airport_id: str) -> None:
+    if not (gr.containsVertex(analyzer['bigrafo'], airport_id)):
+        gr.insertVertex(analyzer['bigrafo'], airport_id)
+
+
+def add_route (analyzer: dict, origin: str, destination: str, distance: float) -> None:
+    edge = gr.getEdge(analyzer['bigrafo'], origin, destination)
+    if (edge == None):
+        gr.addEdge(analyzer['bigrafo'], origin, destination, distance)
      
 
 """
@@ -126,6 +164,15 @@ def comparerutas(stop, keyvaluestop):
     """
     Compara dos estaciones
     """
+    stopcode = keyvaluestop['key']
+    if (stop == stopcode):
+        return 0
+    elif (stop > stopcode):
+        return 1
+    else:
+        return -1
+
+def compareStopIds(stop, keyvaluestop):
     stopcode = keyvaluestop['key']
     if (stop == stopcode):
         return 0

@@ -25,13 +25,34 @@ import model
 import csv
 
 
+
 """
 El controlador se encarga de mediar entre la vista y el modelo.
 """
 
-# Inicialización del Catálogo de libros
+# Inicialización del Catálogo
+def init():
+    """
+    Llama la funcion de inicializacion  del modelo.
+    """
+    # catalog es utilizado para interactuar con el modelo
+    catalog = model.newcatalog()
+    return catalog
 
 # Funciones para la carga de datos
+
+def loadrutas(catalog, rutasfile):
+    """
+    Carga los datos de los archivos CSV en el modelo.
+    Se crea un arco entre cada par de aereopuertos que
+    tienen una ruta en un sentido.
+    """
+    rutasfile = cf.data_dir + rutasfile
+    input_file = csv.DictReader(open(rutasfile, encoding="utf-8"),
+                                delimiter=",")
+    for ruta in input_file:
+        model.addruta(catalog, ruta)
+    return catalog
 
 # Funciones de ordenamiento
 

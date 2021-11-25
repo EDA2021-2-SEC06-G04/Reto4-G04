@@ -26,6 +26,7 @@ import controller
 from DISClib.ADT import list as lt
 assert cf
 
+rutasfile = 'routes_full.csv'
 
 """
 La vista se encarga de la interacción con el usuario
@@ -56,10 +57,17 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
+        print("Creando el catálogo...")
+        #catalog es el catálogo que se usará de ahora en adelante
+        catalog = controller.init()
 
     elif int(inputs[0]) == 2:
-        pass
+        print("\nCargando información de rutas de vuelo...")
+        controller.loadrutas(catalog, rutasfile)
+        #numedges = controller.totalrutas(catalog)
+        #numvertex = controller.totalaereopuertos(catalog)
+        #print('Numero de aereopuertos en el grafo dirigido: ' + str(numvertex))
+        #print('Numero de rutas de vuelo en el grafo dirigido: ' + str(numedges))
 
     else:
         sys.exit(0)

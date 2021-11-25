@@ -40,6 +40,18 @@ def init():
     return catalog
 
 # Funciones para la carga de datos
+def loadciudades(catalog, ciudadesfile):
+    """
+    Carga los datos de los archivos CSV en el modelo.
+    Se crea un vértice por cada aereopuerto en el archivo
+    """
+    ciudadesfile = cf.data_dir + ciudadesfile
+    input_file = csv.DictReader(open(ciudadesfile, encoding="utf-8"),
+                                delimiter=",")
+    for ciudad in input_file:
+        model.addciudad(catalog, ciudad)
+    return catalog
+
 def loadaereopuertos(catalog, aereopuertosfile):
     """
     Carga los datos de los archivos CSV en el modelo.

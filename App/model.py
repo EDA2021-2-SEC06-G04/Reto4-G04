@@ -54,7 +54,8 @@ def newcatalog():
                     'IATA': None,
                     'dirigido': None,
                     'no_dirigido': None,
-                    'ciudades': None
+                    'ciudades': None,
+                    'ciudadesnombre': None
                     }
 
         analyzer['NameAereopuertos'] = mp.newMap(maptype='PROBING',numelements=10000)
@@ -63,6 +64,7 @@ def newcatalog():
                                               directed=True,
                                               size=5000,comparefunction=comparerutas)
         analyzer['ciudades'] = mp.newMap(maptype='PROBING',numelements=9000)
+        analyzer['ciudadesnombre'] = mp.newMap(maptype='PROBING',numelements=9000)
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -79,6 +81,15 @@ def addaereopuerto(catalog,aereopuerto):
         mp.put(catalog['ciudades'],aereopuerto['City'],lt.newList(datastructure='ARRAY_LIST'))
     lt.addLast(me.getValue(mp.get(catalog['ciudades'],aereopuerto['City'])),aereopuerto)
     return catalog
+"""
+Agrega una ciudad al mapa por su nombre
+"""
+def addciudad(catalog,ciudad):
+    if not mp.contains(catalog['ciudadesnombre'],ciudad['city']):
+        mp.put(catalog['ciudadesnombre'],ciudad['city'],lt.newList(datastructure='ARRAY_LIST'))
+    lt.addLast(me.getValue(mp.get(catalog['ciudadesnombre'],ciudad['city'])),ciudad)
+    return catalog
+
      
 
 """

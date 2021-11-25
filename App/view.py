@@ -24,10 +24,13 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
 assert cf
 
 rutasfile = 'routes_full.csv'
 aereopuertosfile = 'airports_full.csv'
+ciudadesfile = 'worldcities.csv'
 
 """
 La vista se encarga de la interacción con el usuario
@@ -64,14 +67,19 @@ while True:
 
     elif int(inputs[0]) == 2:
         print("\nCargando información de rutas de vuelo...")
+        controller.loadciudades(catalog, ciudadesfile)
         controller.loadaereopuertos(catalog, aereopuertosfile)
         controller.loadrutas(catalog, rutasfile)
         numedges = controller.totalrutas(catalog)
         numvertex = controller.totalaereopuertos(catalog)
         print('Numero de aereopuertos en el grafo dirigido: ' + str(numvertex))
         print('Numero de rutas de vuelo en el grafo dirigido: ' + str(numedges))
-        print('')
-
+        print('El total de ciudades es de ' + str(mp.size(catalog['ciudades'])))
+        primeraereopuerto = me.getValue(mp.get(catalog['IATA'],lt.firstElement(mp.keySet(catalog['IATA']))))
+        print('El primer aereopueto cargado es el de ' + primeraereopuerto['Name'] + ' de la ciudad de ' + primeraereopuerto['City'] + ' de ' + primeraereopuerto['Country'] + ' de latitud ' + primeraereopuerto['Latitude'] + ' y longitud ' + primeraereopuerto['Longitude'] + '.\n')
+        ultimaciudad = me.getValue(mp.get(catalog['ciudadesnombre'],lt.lastElement(mp.keySet(catalog['ciudadesnombre']))))
+        ultimaciudad = lt.lastElement(ultimaciudad)
+        print('La ultima ciudad cargada es ' + ultimaciudad['city'] + ' de población ' + ultimaciudad['population'] + ' de latitud ' + ultimaciudad['lat'] + ' y longitud ' + ultimaciudad['lng'] + '.\n')
     else:
         sys.exit(0)
 sys.exit(0)

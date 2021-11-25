@@ -21,6 +21,9 @@
  """
 
 import config as cf
+from DISClib.ADT import list as lt
+from DISClib.ADT.graph import gr
+from DISClib.ADT import map as mp
 import model
 import csv
 
@@ -64,6 +67,30 @@ def loadrutas(catalog, rutasfile):
     for ruta in input_file:
         model.addruta(catalog, ruta)
     return catalog
+
+def load_routes (analyzer: dict) -> None:
+    file = cf.data_dir + '\\Skylines\\routes_full.csv'
+    input_file = csv.DictReader(open(file, encoding='utf-8'))
+
+    for route in input_file:
+        
+        departure = route['Departure']
+        destination = route['Destination']
+        distance = float(route['distance_km'])
+
+        model.mp_add_route(analyzer, departure, destination, distance)
+
+    mp_routes = analyzer['routes']
+    
+    for destination in (lt.iterator(mp.keySet(mp_routes))):
+        mp_departures = mp.get(mp_routes, destination)['value']
+        for departure in (lt.iterator(mp.keySet(mp_departures))):
+            if (mp.contains(mp_routes, departure)):
+                mp_departure_departures = mp.get(mp_routes, departure)['value']
+                if mp.contains(mp_departure_departures, destination):
+                    model.add_airport(analyzer, departure)
+                    model.add_airport(analyzer, destination)
+                    model.add_route(analyzer, departure, destination, distance)
 
 # Funciones de ordenamiento
 

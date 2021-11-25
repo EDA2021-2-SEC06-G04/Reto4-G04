@@ -40,6 +40,17 @@ def init():
     return catalog
 
 # Funciones para la carga de datos
+def loadaereopuertos(catalog, aereopuertosfile):
+    """
+    Carga los datos de los archivos CSV en el modelo.
+    Se crea un vértice por cada aereopuerto en el archivo
+    """
+    aereopuertosfile = cf.data_dir + aereopuertosfile
+    input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
+                                delimiter=",")
+    for aereopuerto in input_file:
+        model.addaereopuerto(catalog, aereopuerto)
+    return catalog
 
 def loadrutas(catalog, rutasfile):
     """
@@ -57,3 +68,14 @@ def loadrutas(catalog, rutasfile):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+def totalrutas(catalog):
+    """
+    Total de vuelos entre aereopuertos
+    """
+    return model.totalrutas(catalog)
+
+def totalaereopuertos(catalog):
+    """
+    Total de aereopuertos en el grafo
+    """
+    return model.totalaereopuertos(catalog)

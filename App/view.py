@@ -27,6 +27,7 @@ from DISClib.ADT import list as lt
 assert cf
 
 rutasfile = 'routes_full.csv'
+aereopuertosfile = 'airports_full.csv'
 
 """
 La vista se encarga de la interacción con el usuario
@@ -63,11 +64,13 @@ while True:
 
     elif int(inputs[0]) == 2:
         print("\nCargando información de rutas de vuelo...")
+        controller.loadaereopuertos(catalog, aereopuertosfile)
         controller.loadrutas(catalog, rutasfile)
-        #numedges = controller.totalrutas(catalog)
-        #numvertex = controller.totalaereopuertos(catalog)
-        #print('Numero de aereopuertos en el grafo dirigido: ' + str(numvertex))
-        #print('Numero de rutas de vuelo en el grafo dirigido: ' + str(numedges))
+        numedges = controller.totalrutas(catalog)
+        numvertex = controller.totalaereopuertos(catalog)
+        print('Numero de aereopuertos en el grafo dirigido: ' + str(numvertex))
+        print('Numero de rutas de vuelo en el grafo dirigido: ' + str(numedges))
+        print('')
 
     else:
         sys.exit(0)

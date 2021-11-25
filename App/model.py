@@ -28,6 +28,7 @@
 import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
@@ -49,33 +50,43 @@ def newcatalog():
     """
     try:
         analyzer = {
-                    'aereopuertos': None,
+                    'NameAereopuertos': None,
+                    'IATA': None,
                     'dirigido': None,
                     'no_dirigido': None,
                     'ciudades': None
                     }
 
-        analyzer['aereopuertos'] = lt.newList(datastructure='ARRAY_LIST')
+        analyzer['NameAereopuertos'] = mp.newMap(maptype='PROBING',numelements=10000)
+        analyzer['IATA'] = mp.newMap(maptype='PROBING',numelements=10000)
         analyzer['dirigido'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
-                                              size=5000,comparefunction=comparerutas
-                                              )
+                                              size=5000,comparefunction=comparerutas)
+        analyzer['ciudades'] = mp.newMap(maptype='PROBING',numelements=9000)
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 
 # Funciones para agregar informacion al catalogo
 """
+Agrega un aereopuerto a los grafos y mapas
+"""
+def addaereopuerto(catalog,aereopuerto):
+    mp.put(catalog['IATA'],aereopuerto['IATA'],aereopuerto)
+    mp.put(catalog['NameAereopuertos'],aereopuerto['Name'],aereopuerto)    
+    gr.insertVertex(catalog['dirigido'],aereopuerto['IATA'])
+    if not mp.contains(catalog['ciudades'],aereopuerto['City']):
+        mp.put(catalog['ciudades'],aereopuerto['City'],lt.newList(datastructure='ARRAY_LIST'))
+    lt.addLast(me.getValue(mp.get(catalog['ciudades'],aereopuerto['City'])),aereopuerto)
+    return catalog
+     
+
+"""
 Agrega una ruta aérea a los grafos
 """
 def addruta(catalog,ruta):
     #vertices = gr.vertices(catalog['dirigido'])
-    if not (lt.isPresent(catalog['aereopuertos'],ruta['Departure'])):
-        gr.insertVertex(catalog['dirigido'],ruta['Departure'])
-        lt.addLast(catalog['aereopuertos'],ruta['Departure'])
-    if not (lt.isPresent(catalog['aereopuertos'],ruta['Destination'])):
-        gr.insertVertex(catalog['dirigido'],ruta['Destination'])
-        lt.addLast(catalog['aereopuertos'],ruta['Destination']) 
+    
     gr.addEdge(catalog['dirigido'],ruta['Departure'],ruta['Destination'],ruta['distance_km'])
     return catalog
 
@@ -83,6 +94,17 @@ def addruta(catalog,ruta):
 # Funciones para creacion de datos
 
 # Funciones de consulta
+def totalrutas(catalog):
+    """
+    Retorna el total de rutas de vuelo (arcos) del grafo
+    """
+    return gr.numEdges(catalog['dirigido'])
+
+def totalaereopuertos(catalog):
+    """
+    Retorna el total de aereopuertos (vértices) del grafo
+    """
+    return gr.numVertices(catalog['dirigido'])
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

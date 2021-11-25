@@ -85,7 +85,7 @@ def loadrutas(catalog, rutasfile):
     return catalog
 
 def load_routes (analyzer: dict) -> None:
-    file = cf.data_dir + '\\Skylines\\routes_full.csv'
+    file = cf.data_dir + 'routes_full.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
 
     for route in input_file:
@@ -122,3 +122,15 @@ def totalaereopuertos(catalog):
     Total de aereopuertos en el grafo
     """
     return model.totalaereopuertos(catalog)
+
+def totalrutasnodir(catalog):
+    """
+    Total de vuelos entre aereopuertos
+    """
+    return model.totalrutasnodir(catalog)
+
+def totalaereopuertosnodir(catalog):
+    """
+    Total de aereopuertos en el grafo
+    """
+    return model.totalaereopuertosnodir(catalog)

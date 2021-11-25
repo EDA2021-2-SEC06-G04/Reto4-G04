@@ -55,7 +55,8 @@ def newcatalog():
                     'dirigido': None,
                     'no_dirigido': None,
                     'ciudades': None,
-                    'ciudadesnombre': None
+                    'ciudadesnombre': None,
+                    'bigrafo': None
                     }
 
         analyzer['NameAereopuertos'] = mp.newMap(maptype='PROBING',numelements=10000)
@@ -154,6 +155,18 @@ def totalaereopuertos(catalog):
     Retorna el total de aereopuertos (vértices) del grafo
     """
     return gr.numVertices(catalog['dirigido'])
+
+def totalrutasnodir(catalog):
+    """
+    Retorna el total de rutas de vuelo (arcos) del grafo
+    """
+    return gr.numEdges(catalog['bigrafo'])
+
+def totalaereopuertosnodir(catalog):
+    """
+    Retorna el total de aereopuertos (vértices) del grafo
+    """
+    return gr.numVertices(catalog['bigrafo'])
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 

@@ -70,10 +70,16 @@ while True:
         controller.loadciudades(catalog, ciudadesfile)
         controller.loadaereopuertos(catalog, aereopuertosfile)
         controller.loadrutas(catalog, rutasfile)
+        controller.load_routes(catalog)
         numedges = controller.totalrutas(catalog)
         numvertex = controller.totalaereopuertos(catalog)
         print('Numero de aereopuertos en el grafo dirigido: ' + str(numvertex))
         print('Numero de rutas de vuelo en el grafo dirigido: ' + str(numedges))
+
+        numedges = controller.totalrutasnodir(catalog)
+        numvertex = controller.totalaereopuertosnodir(catalog)
+        print('Numero de aereopuertos en el grafo no dirigido: ' + str(numvertex))
+        print('Numero de rutas de vuelo en el grafo no dirigido: ' + str(numedges))
         print('El total de ciudades es de ' + str(mp.size(catalog['ciudades'])))
         primeraereopuerto = controller.loadaereopuertos(catalog, aereopuertosfile)[1]
         print('El primer aereopueto cargado es el de ' + primeraereopuerto['Name'] + ' de la ciudad de ' + primeraereopuerto['City'] + ' de ' + primeraereopuerto['Country'] + ' de latitud ' + primeraereopuerto['Latitude'] + ' y longitud ' + primeraereopuerto['Longitude'] + '.\n')

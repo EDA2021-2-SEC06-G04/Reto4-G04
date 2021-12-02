@@ -70,7 +70,10 @@ def newcatalog():
                     'NameAereopuertos': None,
                     'IATA': None,
                     'dirigido': None,
-                    'ciudades': None
+                    'no_dirigido': None,
+                    'ciudades': None,
+                    'ciudadesnombre': None,
+                    'bigrafo': None
                     }
 
         analyzer['NameAereopuertos'] = mp.newMap(maptype='PROBING',numelements=10000)
@@ -81,6 +84,7 @@ def newcatalog():
                                               directed=True,
                                               size=5000,comparefunction=comparerutas)
         analyzer['ciudades'] = mp.newMap(maptype='PROBING',numelements=9000)
+        analyzer['ciudadesnombre'] = mp.newMap(maptype='PROBING',numelements=9000)
 
         analyzer['routes'] = mp.newMap(numelements=9076,
                                   maptype = 'PROBING')
@@ -117,6 +121,15 @@ def addaereopuerto(catalog,aereopuerto):
         mp.put(catalog['ciudades'],aereopuerto['City'],lt.newList(datastructure='ARRAY_LIST'))
     lt.addLast(me.getValue(mp.get(catalog['ciudades'],aereopuerto['City'])),aereopuerto)
     return catalog
+"""
+Agrega una ciudad al mapa por su nombre
+"""
+def addciudad(catalog,ciudad):
+    if not mp.contains(catalog['ciudadesnombre'],ciudad['city']):
+        mp.put(catalog['ciudadesnombre'],ciudad['city'],lt.newList(datastructure='ARRAY_LIST'))
+    lt.addLast(me.getValue(mp.get(catalog['ciudadesnombre'],ciudad['city'])),ciudad)
+    return catalog
+
 
 
 def mp_add_route (analyzer: dict, departure: str, destination:str, distance: float) -> None:
@@ -200,6 +213,19 @@ def totalaereopuertos(catalog):
     """ 
     return gr.numVertices(catalog['dirigido'])
 
+def totalrutasnodir(catalog):
+    """
+    Retorna el total de rutas de vuelo (arcos) del grafo
+    """
+    return gr.numEdges(catalog['bigrafo'])
+
+def totalaereopuertosnodir(catalog):
+    """
+    Retorna el total de aereopuertos (vértices) del grafo
+    """
+    return gr.numVertices(catalog['bigrafo'])
+
+# Funciones utilizadas para comparar elementos dentro de una lista
 
 
 

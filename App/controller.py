@@ -57,6 +57,19 @@ def init():
 
 
 # Funciones para la carga de datos
+def loadciudades(catalog, ciudadesfile):
+    """
+    Carga los datos de los archivos CSV en el modelo.
+    Se crea un vértice por cada aereopuerto en el archivo
+    """
+    ciudadesfile = cf.data_dir + ciudadesfile
+    input_file = csv.DictReader(open(ciudadesfile, encoding="utf-8"),
+                                delimiter=",")
+                                
+    for ciudad in input_file:
+        model.addciudad(catalog, ciudad)
+    return catalog
+
 def loadaereopuertos(catalog, aereopuertosfile):
     """
         Carga los datos de los archivos CSV en el modelo.
@@ -66,9 +79,12 @@ def loadaereopuertos(catalog, aereopuertosfile):
     aereopuertosfile = cf.data_dir + aereopuertosfile
     input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
                                 delimiter=",")
+    f = None
     for aereopuerto in input_file:
+        if f == None:
+            f = aereopuerto
         model.addaereopuerto(catalog, aereopuerto)
-    return catalog
+    return catalog,f
 
 
 
@@ -89,7 +105,7 @@ def loadrutas(catalog, rutasfile):
 
 
 def load_routes (analyzer: dict) -> None:
-    file = cf.data_dir + '\\Skylines\\routes_full.csv'
+    file = cf.data_dir + 'routes_full.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
 
     for route in input_file:
@@ -138,3 +154,15 @@ def totalaereopuertos(catalog):
         
     """
     return model.totalaereopuertos(catalog)
+
+def totalrutasnodir(catalog):
+    """
+    Total de vuelos entre aereopuertos
+    """
+    return model.totalrutasnodir(catalog)
+
+def totalaereopuertosnodir(catalog):
+    """
+    Total de aereopuertos en el grafo
+    """
+    return model.totalaereopuertosnodir(catalog)

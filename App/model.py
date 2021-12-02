@@ -66,34 +66,56 @@ def newcatalog():
 
     """
     try:
-        analyzer = {
-                    'NameAereopuertos': None,
-                    'IATA': None,
-                    'dirigido': None,
-                    'no_dirigido': None,
-                    'ciudades': None,
-                    'ciudadesnombre': None,
-                    'bigrafo': None
-                    }
+        
+        # Definir variable que guarda la información del analizar e inicializarla
+        analyzer = {}
 
-        analyzer['NameAereopuertos'] = mp.newMap(maptype='PROBING',numelements=10000)
-
-        analyzer['IATA'] = mp.newMap(maptype='PROBING',numelements=10000)
+        
 
         analyzer['dirigido'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
                                               size=5000,comparefunction=comparerutas)
-        analyzer['ciudades'] = mp.newMap(maptype='PROBING',numelements=9000)
-        analyzer['ciudadesnombre'] = mp.newMap(maptype='PROBING',numelements=9000)
-
-        analyzer['routes'] = mp.newMap(numelements=9076,
-                                  maptype = 'PROBING')
+        
 
         analyzer['bigrafo'] = gr.newGraph(datastructure = 'ADJ_LIST',
                                       directed = True,
                                       size = 9076,
                                       comparefunction = compareStopIds)
+
+
+        #####-----#####-----#####   Definición Maps/Índices   #####-----#####-----#####
+
+        """
+            A continuación se crearán maps por diferentes criterios
+            para llegar a la información requerida en el menor tiempo posible.
+
+            Es importante notar que todos los maps referencian a la misma información.
+        
+        """
+
+        analyzer['NameAereopuertos'] = mp.newMap(maptype='PROBING', numelements=10000)
+
+        analyzer['IATA'] = mp.newMap(maptype='PROBING', numelements=10000)
+
+        analyzer['ciudades'] = mp.newMap(maptype='PROBING', numelements=9000)
+
+        analyzer['ciudadesnombre'] = mp.newMap(maptype='PROBING', numelements=9000)
+
+        analyzer['routes'] = mp.newMap(numelements=9076,
+                                  maptype = 'PROBING')
+
+        # Mapa no ordenado cuyas llaves son nombres de ciudades y cuyas llaves son listas enlazadas que contienen
+        # los id de las ciudades identificadas con ese nombre.
+        analyzer['city-id'] = mp.newMap(numelements = 41002, maptype = "PROBING")
+
+        # Mapa no ordenado cuyas llaves son id de ciudades y cuyas llaves son diccionarios de Python que guardan la 
+        # información de interés de la ciudad identificada con dicho id.
+        analyzer['id-city_info'] = mp.newMap(numelements = 41002, maptype = "PROBING")
+
+
+        # Retornar el analizador.
         return analyzer
+
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 
@@ -121,10 +143,14 @@ def addaereopuerto(catalog,aereopuerto):
         mp.put(catalog['ciudades'],aereopuerto['City'],lt.newList(datastructure='ARRAY_LIST'))
     lt.addLast(me.getValue(mp.get(catalog['ciudades'],aereopuerto['City'])),aereopuerto)
     return catalog
-"""
-Agrega una ciudad al mapa por su nombre
-"""
+
+
+
 def addciudad(catalog,ciudad):
+    """
+        Agrega una ciudad al mapa por su nombre.
+
+    """
     if not mp.contains(catalog['ciudadesnombre'],ciudad['city']):
         mp.put(catalog['ciudadesnombre'],ciudad['city'],lt.newList(datastructure='ARRAY_LIST'))
     lt.addLast(me.getValue(mp.get(catalog['ciudadesnombre'],ciudad['city'])),ciudad)
@@ -172,6 +198,68 @@ def addruta(catalog,ruta):
 
 
 
+# Función que añade una pareja llave-valor al map 'city-id'.
+def add_id (analyzer: dict, param_city: str, id: int) -> None:
+    """
+        Esta función permite agregar una pareja llave-valor al map 'city-id' del catálogo.
+        
+        La llave deberá ser una ciudad, es decir, una cadena de caracteres.
+        El valor será una lista enlazada cuyos elementos son ids (es decir, números enteros) con los cuales
+        dicha ciudad se identifica.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+            -> param_city (str): ciudad.
+            -> id (int): id con el que la ciudad se identifica.
+
+        No tiene retorno.
+    
+    """
+
+    mp_city = analyzer ['city-id']               # Guardar el mapa 'city-id'.
+    exists = mp.contains(mp_city, param_city)    # Determinar si la pareja llave-valor ya existe.
+
+    # Si ya existe la pareja llave-valor.
+    if (exists):
+
+        # Crear variable que guarda la lista de los ids.
+        lt_ids = mp.get(mp_city, param_city)['value']
+        lt.addLast(lt_ids, id)
+
+
+    # Si no existe la pareja llave-valor.
+    else:
+
+        # Crear una nueva lista de ids, añadir el id a dicha y añadir la pareja al map.
+        new_lt_ids = lt.newList('ARRAY_LIST')
+        lt.addLast(new_lt_ids, id)
+        mp.put(mp_city, param_city, new_lt_ids)
+
+
+
+# Función que añade una pareja llave-valor al map 'id-city_info'.
+def add_city_info (analyzer: dict, param_id: int, city_info: dict) -> None:
+    """
+        Esta función permite agregar una pareja llave-valor al map 'id-city_info' del catálogo.
+        
+        La llave deberá ser un id, es decir, un número entero.
+        El valor será un diccionario de Python que guarda toda la información de la ciudad identificada
+        con dicho id. 
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+            -> param_id (int): id de la ciudad.
+            -> city_info (dict): diccionario con la info. de la ciudad.
+
+        No tiene retorno.
+    
+    """
+
+    # Guardar el mapa 'id-city_info' y añadir pareja llave-valor.
+    mp_id = analyzer ['id-city_info']
+    mp.put(mp_id, param_id, city_info)
+
+
 
 #####-----#####-----#####-----#####-----#####   ###---####----###   #####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####   CREACIÓN DE DATOS   #####-----#####-----#####-----#####-----#####
@@ -183,6 +271,53 @@ def addruta(catalog,ruta):
 
 """
 
+# Función que crea una ciudad.
+def new_city (city_info: dict) -> dict:
+    """
+        Esta función permite crear un diccionario que almacenará la información de interés de una ciudad.
+        Estos se representarán mediante el tipo de dato dict de Python.
+
+        Parámetros:
+            -> city_info (dict): diccionario que tiene toda la información de interés de la ciudad.
+
+        Retorno:
+            -> (dict): diccionario que representa la ciudad.
+
+    """
+
+    # Crear variable que guardará el diccionario de la ciudad.
+    city = {}
+
+    # Añadir los datos de interés.
+    city['city'] = city_info['city']
+    city['city_ascii'] = city_info['city_ascii']
+    city['lat'] = city_info['lat']
+    city['lng'] = city_info['lng']
+    city['country'] = city_info['country']
+    city['iso2'] = city_info['iso2']
+    city['iso3'] = city_info['iso3']
+    city['admin_name'] = city_info['admin_name']
+    city['capital'] = city_info['capital']
+    city['population'] = city_info['population']
+    city['id'] = city_info['id']
+
+    # Cambiar datos desconocidos a 'N.A.'.
+    for key in city:
+        if (city[key] == ''):
+            city[key] = 'N.A.'
+    
+    # Convertir latitud, longitud, poblaión e id en decimales y enteros.
+    if not (city['lat'] == 'N.A.'):
+        city['lat'] = float(city['lat'])
+    if not (city['lng'] == 'N.A.'):
+        city['lng'] = float(city['lng'])
+    if not (city['population'] == 'N.A.'):
+        city['population'] = int(float(city['population']))
+    if not (city['id'] == 'N.A.'):
+        city['id'] = int(float(city['id']))
+
+    # Retornar la ciuad.
+    return city
 
 
 
@@ -262,3 +397,21 @@ def compareStopIds(stop, keyvaluestop):
         return 1
     else:
         return -1
+
+
+
+# Esta función compara los id de una ciudad.
+def cmp_cities (city:dict, id: int) -> int:
+    """
+    """
+    
+    # Guardar el id de la ciudad y crear variable retorno.
+    id_city = city['id']
+    ans = -1
+
+    # Comparar los id y retornar.
+    if (id_city == id):
+        ans = 0
+    elif (id_city < id):
+        ans = 1
+    return ans

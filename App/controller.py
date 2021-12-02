@@ -45,7 +45,7 @@ import csv
 """
 
 # Inicialización del Catálogo
-def init():
+def init() -> dict:
     """
         Llama la funcion de inicializacion  del modelo.
 
@@ -56,13 +56,42 @@ def init():
 
 
 
+# Función que carga toda la información al analizador.
+def load_data (analyzer: dict) -> None:
+    """
+        Esta función carga toda la información al analizador.
+
+        Parámetro:
+            -> analyzer (dict): analizador.
+
+        No tiene retorno.
+
+    """
+
+    # Crear variables que guardan la referencia al archivo de las ciudades y toda
+    # su información.
+    file = cf.data_dir + '\\Skylines\\worldcities.csv'
+    input_file = csv.DictReader(open(file, encoding='utf-8'))
+
+    # Iterar sobre cada ciudad de la base de datos.
+    for city_info in input_file:
+
+        city = model.new_city(city_info)    # Crear diccionario con la información de la ciudad.
+        name = city['city']                 # Guardar su nombre.
+        id = city['id']                     # Guardar su id.
+
+        model.add_id(analyzer, name, id)            # Añadirla al mapa 'city-id'.
+        model.add_city_info(analyzer, id, city)     # Añadirla al mapa 'id-city_info'.
+        
+
+
 # Funciones para la carga de datos
-def loadciudades(catalog, ciudadesfile):
+def loadciudades(catalog):
     """
     Carga los datos de los archivos CSV en el modelo.
     Se crea un vértice por cada aereopuerto en el archivo
     """
-    ciudadesfile = cf.data_dir + ciudadesfile
+    ciudadesfile = cf.data_dir + '\\Skylines\\worldcities.csv'
     input_file = csv.DictReader(open(ciudadesfile, encoding="utf-8"),
                                 delimiter=",")
                                 
@@ -70,13 +99,13 @@ def loadciudades(catalog, ciudadesfile):
         model.addciudad(catalog, ciudad)
     return catalog
 
-def loadaereopuertos(catalog, aereopuertosfile):
+def loadaereopuertos(catalog):
     """
         Carga los datos de los archivos CSV en el modelo.
         Se crea un vértice por cada aereopuerto en el archivo.
 
     """
-    aereopuertosfile = cf.data_dir + aereopuertosfile
+    aereopuertosfile = cf.data_dir + '\\Skylines\\airports_full.csv'
     input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
                                 delimiter=",")
     f = None
@@ -88,14 +117,14 @@ def loadaereopuertos(catalog, aereopuertosfile):
 
 
 
-def loadrutas(catalog, rutasfile):
+def loadrutas(catalog):
     """
         Carga los datos de los archivos CSV en el modelo.
         Se crea un arco entre cada par de aereopuertos que
         tienen una ruta en un sentido.
 
     """
-    rutasfile = cf.data_dir + rutasfile
+    rutasfile = cf.data_dir + '\\Skylines\\routes_full.csv'
     input_file = csv.DictReader(open(rutasfile, encoding="utf-8"),
                                 delimiter=",")
     for ruta in input_file:
@@ -105,7 +134,8 @@ def loadrutas(catalog, rutasfile):
 
 
 def load_routes (analyzer: dict) -> None:
-    file = cf.data_dir + 'routes_full.csv'
+
+    file = cf.data_dir + '\\Skylines\\routes_full.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
 
     for route in input_file:

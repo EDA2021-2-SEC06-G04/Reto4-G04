@@ -67,6 +67,26 @@ def load_data (analyzer: dict) -> None:
         No tiene retorno.
 
     """
+    # Invocar funciones para carga de datos.
+    load_routes(analyzer)
+    loadaereopuertos(analyzer)
+    loadciudades(analyzer)
+    loadrutas(analyzer)
+    load_cities(analyzer)
+
+
+
+# Función que carga la información de las ciudades al analizador.
+def load_cities (analyzer: dict) -> None:
+    """
+        Esta función carga la información de las ciudades al analizador.
+
+        Parámetro:
+            -> analyzer (dict): analizador.
+
+        No tiene retorno.
+
+    """
 
     # Crear variables que guardan la referencia al archivo de las ciudades y toda
     # su información.

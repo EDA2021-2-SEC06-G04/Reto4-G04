@@ -26,6 +26,7 @@
 
 import config as cf
 import os
+import time
 import sys
 import controller
 from DISClib.ADT import list as lt
@@ -46,17 +47,23 @@ assert cf
 
 """
 
-def printMenu():
-    print("Bienvenido")
-    print("1- Crear el catálogo")
-    print("2- Cargar información en el catálogo")
-    print("3- Encontrar puntos de interconexión aérea")
-    print("4- Encontrar clústeres de tráfico aéreo")
-    print("5- Encontrar la ruta más corta entre ciudades")
-    print("6- Utilizar las millas de viajero")
-    print("7- Cuantificar el efecto de un aeropuerto cerrado")
-    print("8- Comparar con servicio WEB externo")
-    print("9- Visualizar gráficamente los requerimientos")
+# Función que imprime el menú de opciones.
+def print_menu () -> None:
+    """
+        Esta función imprime el menú de interacción con el usuario. No tiene ni parámetros ni retorno.
+
+    """
+    
+    print("""\n======================= BIENVENIDO =======================\n""")
+    print("  1- Cargar información al analizador.")
+    print("  2- (Req. 1) Encontrar puntos de interconexión aérea.")
+    print("  3- (Req. 2) Encontrar clústeres de tráfico aéreo.")
+    print("  4- (Req. 3) Encontrar la ruta más corta entre ciudades.")
+    print("  5- (Req. 4) Utilizar las millas de viajero.")
+    print("  6- (Req. 5) Cuantificar el efecto de un aeropuerto cerrado.")
+    print("  7- (Req. 6) Comparar con servicio WEB externo.")
+    print("  8- (Req. 7) Visualizar gráficamente los requerimientos.")
+    print("  0- Salir.")
 
 
 
@@ -101,9 +108,6 @@ def load_data (analyzer: dict) -> None:
     """
     # Cargar los datos mediante la función homónima de controller.py.
     controller.load_data(analyzer)
-    controller.loadciudades(analyzer)
-    controller.loadaereopuertos(analyzer)
-    controller.loadrutas(analyzer)
 
 
 
@@ -123,91 +127,139 @@ os.system('cls')     # Limpiar la consola.
 # Ciclo indefinido de la herramienta.
 while True:
     
-    printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
+    # Imprimir menú y preguntar al usuario la acción que desea realizar.
+    print_menu()
+    inputs = input('\nPor favor, seleccione una opción para continuar:\n  -> ')
 
-    if int(inputs[0]) == 1:
-        print("Creando el catálogo...")
-        #catalog es el catálogo que se usará de ahora en adelante
-        catalog = controller.init()
+    # Si el usuario ingresó una opción válida.
+    try:
 
-    elif int(inputs[0]) == 2:
-        print("\nCargando información de rutas de vuelo...")
-        controller.load_routes(catalog)
-        load_data(catalog)
-        numedges = controller.totalrutas(catalog)
-        numvertex = controller.totalaereopuertos(catalog)
-        print('Numero de aereopuertos en el grafo dirigido: ' + str(numvertex))
-        print('Numero de rutas de vuelo en el grafo dirigido: ' + str(numedges))
+        # Opción carga de datos.
+        if int(inputs[0]) == 1:
 
-        numedges = controller.totalrutasnodir(catalog)
-        numvertex = controller.totalaereopuertosnodir(catalog)
-        print('Numero de aereopuertos en el grafo no dirigido: ' + str(numvertex))
-        print('Numero de rutas de vuelo en el grafo no dirigido: ' + str(numedges))
-        print('El total de ciudades es de ' + str(mp.size(catalog['ciudades'])))
-        primeraereopuerto = controller.loadaereopuertos(catalog)[1]
-        print('El primer aereopueto cargado es el de ' + primeraereopuerto['Name'] + ' de la ciudad de ' + primeraereopuerto['City'] + ' de ' + primeraereopuerto['Country'] + ' de latitud ' + primeraereopuerto['Latitude'] + ' y longitud ' + primeraereopuerto['Longitude'] + '.\n')
-        ultimaciudad = me.getValue(mp.get(catalog['ciudadesnombre'],lt.lastElement(mp.keySet(catalog['ciudadesnombre']))))
-        ultimaciudad = lt.lastElement(ultimaciudad)
-        print('La ultima ciudad cargada es ' + ultimaciudad['city'] + ' de población ' + ultimaciudad['population'] + ' de latitud ' + ultimaciudad['lat'] + ' y longitud ' + ultimaciudad['lng'] + '.\n')
-
-    
-    # Si escoge la opción 6.
-    elif int(inputs[0]) == 6:
-
-        # Limpiar la consola.
-        os.system('cls')
-
-        # Imprimir mensaje de carga.
-        print("""\n======================= Inputs Req. 4 =======================\n""")
-        
-        mp_city = catalog['city-id']
-        mp_id = catalog['id-city_info']
-
-
-        first_city = input('Por favor, escriba el nombre de la ciudad inicial:\n  -> ')
-        lt_ids = mp.get(mp_city, first_city)['value']
-
-        if (lt.size(lt_ids) == 1):
-            id = lt.getElement(lt_ids, 1)
-            city = mp.get(mp_id, id)['value']
-
-        else:
-            i = 1
-            for id in lt.iterator(lt_ids):
-                city_info = mp.get(mp_id, id)['value']
-                city_name = city_info['city']
-                city_country = city_info['country']
-
-                print(str(i) + ' - ' + city_name + "," + city_country)
-                i += 1
+            # Limpiar la consola.
+            os.system('cls')
             
-            id = int(input('Por favor, digite el número de la ciudad que desea escoger:\n  ->'))
-            first_city = mp.get(mp_id, lt.getElement(lt_ids, id))['value']
+            # Imprimir mensaje de carga.
+            print("""\n======================= Carga de Datos =======================\n""")
+            print("Cargando información al catálogo ...")
+
+            catalog = init ()                   # Inicializar catálogo.
+            start_time = time.process_time()    # Iniciar el tiempo
+            load_data(catalog)                  # Cargar datos al catálogo.
+            stop_time = time.process_time()     # Parar el tiempo.
+
+            # Calcular tiempo de ejecución en milisegundos.
+            elapsed_time_mseg = (stop_time - start_time)*1000
+
+            # Imprimir mensaje de éxito.
+            print("\n<> Información cargada con éxito. <>")
+            print(' - ' + "Tiempo de ejecución:", elapsed_time_mseg, "milisegundos.")
+
+            numedges = controller.totalrutas(catalog)
+            numvertex = controller.totalaereopuertos(catalog)
+            print(' - ' + 'Número de aereopuertos en el grafo dirigido: ' + str(numvertex) + '.')
+            print(' - ' + 'Número de rutas de vuelo en el grafo dirigido: ' + str(numedges) + '.')
+
+            numedges = controller.totalrutasnodir(catalog)
+            numvertex = controller.totalaereopuertosnodir(catalog)
+            print(' - ' + 'Numero de aereopuertos en el grafo no dirigido: ' + str(numvertex) + '.')
+            print(' - ' + 'Numero de rutas de vuelo en el grafo no dirigido: ' + str(numedges) + '.')
+            print(' - ' + 'El total de ciudades es de ' + str(mp.size(catalog['ciudades'])) + '.')
+
+            primeraereopuerto = controller.loadaereopuertos(catalog)[1]
+            print(' - ' + 'El primer aereopueto cargado es el de', primeraereopuerto['Name'], 'de la ciudad de', primeraereopuerto['City'], 'de',
+                  primeraereopuerto['Country'], 'de latitud', round(float(primeraereopuerto['Latitude']), 2), 'y longitud', str(round(float(primeraereopuerto['Longitude']), 2)) + '.')
+
+            ultimaciudad = me.getValue(mp.get(catalog['ciudadesnombre'],lt.lastElement(mp.keySet(catalog['ciudadesnombre']))))
+            ultimaciudad = lt.lastElement(ultimaciudad)
+            print(' - ' + 'La ultima ciudad cargada es ' + ultimaciudad['city'] + ' de población ' + ultimaciudad['population'] + ' de latitud',
+                  round(float(ultimaciudad['lat']), 2), 'y longitud', str(round(float(ultimaciudad['lng']) ,2)) + '.')
+
+        
+        # Si escoge la opción 6.
+        elif int(inputs[0]) == 6:
+
+            # Limpiar la consola.
+            os.system('cls')
+
+            # Imprimir mensaje de carga.
+            print("""\n======================= Inputs Req. 4 =======================\n""")
+            
+            # Guardar mapas de interés.
+            mp_city = catalog['city-id']
+            mp_id = catalog['id-city_info']
+
+            # Pedir al usuario la primera ciudad y obtener la lista de ids de la ciudad con dicho nombre.
+            first_city = input('Por favor, escriba el nombre de la ciudad inicial:\n  -> ')
+            lt_ids = mp.get(mp_city, first_city)['value']
+
+            if (lt.size(lt_ids) == 1):
+                id = lt.getElement(lt_ids, 1)
+                city = mp.get(mp_id, id)['value']
+
+            else:
+                i = 1
+                for id in lt.iterator(lt_ids):
+                    city_info = mp.get(mp_id, id)['value']
+                    city_name = city_info['city']
+                    city_country = city_info['country']
+
+                    print(str(i) + ' - ' + city_name + "," + city_country)
+                    i += 1
+                
+                id = int(input('Por favor, digite el número de la ciudad que desea escoger:\n  ->'))
+                first_city = mp.get(mp_id, lt.getElement(lt_ids, id))['value']
 
 
-        last_city = input('Por favor, escriba el nombre de la ciudad final:\n  -> ')
-        lt_ids = mp.get(mp_city, last_city)['value']
+            last_city = input('Por favor, escriba el nombre de la ciudad final:\n  -> ')
+            lt_ids = mp.get(mp_city, last_city)['value']
 
-        if (lt.size(lt_ids) == 1):
-            id = lt.getElement(lt_ids, 1)
-            city_info = mp.get(mp_id, id)['value']
-
-        else:
-            i = 1
-            for id in lt.iterator(lt_ids):
+            if (lt.size(lt_ids) == 1):
+                id = lt.getElement(lt_ids, 1)
                 city_info = mp.get(mp_id, id)['value']
-                city_name = city_info['city']
-                city_country = city_info['country']
-                print(str(i) + ' - ' + city_name + "," + city_country)
-                i += 1
-            id = int(input('Por favor, digite el número de la ciudad que desea escoger:\n  ->'))
-            last_city = mp.get(mp_id, lt.getElement(lt_ids, id))['value']
+
+            else:
+                i = 1
+                for id in lt.iterator(lt_ids):
+                    city_info = mp.get(mp_id, id)['value']
+                    city_name = city_info['city']
+                    city_country = city_info['country']
+                    print(str(i) + ' - ' + city_name + "," + city_country)
+                    i += 1
+                id = int(input('Por favor, digite el número de la ciudad que desea escoger:\n  ->'))
+                last_city = mp.get(mp_id, lt.getElement(lt_ids, id))['value']
 
 
 
+        # Opción salir.
+        elif int(inputs[0]) == 0:
+            
+            # Limpiar la consola.
+            os.system('cls')
+            
+            # Imprimir mensaje de carga.
+            print("""\n======================= Exit =======================\n""")
+            print("Gracias por usar la herramienta. Hasta pronto.\n\n")
+
+            sys.exit(0)
 
 
-    else:
+
+        # Si se ingresa un valor erróneo.
+        else:
+            os.system('cls')        # Limpiar la consola.
+            print("""\n======================= ERROR =======================\n""")
+            print("Debe ingresar una opción válida.\n\n")
+            sys.exit(0)
+
+
+
+    # Si el usuario ingresó una opción inválida.
+    except ValueError:
+        os.system('cls')    # Limpiar la consola.
+        print("""\n======================= ERROR =======================\n""")
+        print("Debe ingresar valores adecuados.\n\n")
         sys.exit(0)
+
 sys.exit(0)

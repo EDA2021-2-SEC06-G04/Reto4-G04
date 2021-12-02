@@ -20,7 +20,12 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+#####-----#####-----#####-----#####-----#####-----#####   ####---#####---####   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   IMPORTACIÓN MÓDULOS   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   ####---#####---####   #####-----#####-----#####-----#####-----#####-----#####
+
 import config as cf
+import os
 import sys
 import controller
 from DISClib.ADT import list as lt
@@ -29,11 +34,17 @@ assert cf
 rutasfile = 'routes_full.csv'
 aereopuertosfile = 'airports_full.csv'
 
+
+
+
+#####-----#####-----#####-----#####-----#####-----#####   #####---######---#####   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   FUNCIONES DE IMPRESIÓN   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   #####---######---#####   #####-----#####-----#####-----#####-----#####-----#####
+
 """
-La vista se encarga de la interacción con el usuario
-Presenta el menu de opciones y por cada seleccion
-se hace la solicitud al controlador para ejecutar la
-operación solicitada
+    Se definen las funciones que permitirán imprimir el menú y los resultados de cada
+    requerimiento, de tal forma que se dispongan de una manera amigable para el usuario.
+
 """
 
 def printMenu():
@@ -49,12 +60,24 @@ def printMenu():
     print("9- Visualizar gráficamente los requerimientos")
 
 
-catalog = None
+
+
+#####-----#####-----#####-----#####-----#####-----#####   ###---##---###   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   MENÚ PRINCIPAL   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   ###---##---###   #####-----#####-----#####-----#####-----#####-----#####
 
 """
-Menu principal
+    Se define la iteración indefinida que permitirá al usuario cargar la información al catálogo y consultar los
+    resultados de cada requerimiento. 
+
 """
+
+catalog = None       # Crear variable que guardará el catálogo.
+os.system('cls')     # Limpiar la consola.
+
+# Ciclo indefinido de la herramienta.
 while True:
+    
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:

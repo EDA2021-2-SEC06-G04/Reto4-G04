@@ -24,6 +24,9 @@
  * Dario Correal - Version inicial
  """
 
+#####-----#####-----#####-----#####-----#####   ####---#####---####   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   IMPORTACIÓN MÓDULOS   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   ####---#####---####   #####-----#####-----#####-----#####-----#####
 
 import config
 from DISClib.ADT.graph import gr
@@ -36,17 +39,31 @@ from DISClib.Utils import error as error
 assert config
 
 
+
+
+#####-----#####-----#####-----#####-----#####   ########-----######-----########   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   DEFINICIÓN ESTRUCTURAS ELEMENTOS   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   ########-----######-----########   #####-----#####-----#####-----#####-----#####
+
+"""
+    Se define la estructura que contiene el analizador.
+    Esta posee una
+
+"""
+
 # Construccion de modelos
 def newcatalog():
-    """ Inicializa el catálogo
+    """ 
+        Inicializa el catálogo
 
-   dirigido: grafo dirigido con vértices en cada aereopuerto y arcos para
-   cada vuelo que los relaciona en la dirección correspondiente.
+        dirigido: grafo dirigido con vértices en cada aereopuerto y arcos para
+        cada vuelo que los relaciona en la dirección correspondiente.
 
-   no_dirigido: Grafo para representar las relaciones entre aereopuertos de 
-   forma que dos aereopuertos se relacionan solo si hay un vuelo directo de ida y otro de vuelta entre ambos.
+        no_dirigido: Grafo para representar las relaciones entre aereopuertos de 
+        forma que dos aereopuertos se relacionan solo si hay un vuelo directo de ida y otro de vuelta entre ambos.
 
-    ciudades: índice que tiene por llave el nombre de una ciudad y por valor una lista de todas las ciudades diferentes con el nombre.
+        ciudades: índice que tiene por llave el nombre de una ciudad y por valor una lista de todas las ciudades diferentes con el nombre.
+
     """
     try:
         analyzer = {
@@ -72,16 +89,27 @@ def newcatalog():
                                       directed = True,
                                       size = 9076,
                                       comparefunction = compareStopIds)
-
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
 
-# Funciones para agregar informacion al catalogo
+
+
+
+#####-----#####-----#####-----#####-----#####   ###---###----###   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   ADICIÓN DE DATOS   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   ###---###----###   #####-----#####-----######-----####-----#####
+
 """
-Agrega un aereopuerto a los grafos y mapas
+    Se definen las funciones que permitirán añadir elementos al catálogo.
+
 """
+
 def addaereopuerto(catalog,aereopuerto):
+    """
+        Agrega un aereopuerto a los grafos y mapas
+
+    """
     mp.put(catalog['IATA'],aereopuerto['IATA'],aereopuerto)
     mp.put(catalog['NameAereopuertos'],aereopuerto['Name'],aereopuerto)    
     gr.insertVertex(catalog['dirigido'],aereopuerto['IATA'])
@@ -118,39 +146,77 @@ def add_route (analyzer: dict, origin: str, destination: str, distance: float) -
         gr.addEdge(analyzer['bigrafo'], origin, destination, distance)
      
 
-"""
-Agrega una ruta aérea a los grafos
-"""
 def addruta(catalog,ruta):
+    """
+        Agrega una ruta aérea a los grafos.
+
+    """
+    
     #vertices = gr.vertices(catalog['dirigido'])
     
     gr.addEdge(catalog['dirigido'],ruta['Departure'],ruta['Destination'],ruta['distance_km'])
     return catalog
 
 
-# Funciones para creacion de datos
 
-# Funciones de consulta
+
+#####-----#####-----#####-----#####-----#####   ###---####----###   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   CREACIÓN DE DATOS   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   ###---####----###   #####-----#####-----######-----####-----#####
+
+"""
+    Se define las funciones que permitirán crear elementos referentes a información
+    de interés del catálogo.
+
+"""
+
+
+
+
+
+#####-----#####-----#####-----#####-----#####   ####---######----####   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   FUNCIONES DE CONSULTA   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   ####---######----####   #####-----#####-----######-----####-----#####
+
+"""
+    Se define las funciones que permitirán acceder a información de interés de
+    las estructuras.
+
+"""
+
 def totalrutas(catalog):
     """
-    Retorna el total de rutas de vuelo (arcos) del grafo
+        Retorna el total de rutas de vuelo (arcos) del grafo
+
     """
     return gr.numEdges(catalog['dirigido'])
 
+
+
 def totalaereopuertos(catalog):
     """
-    Retorna el total de aereopuertos (vértices) del grafo
-    """
+        Retorna el total de aereopuertos (vértices) del grafo
+
+    """ 
     return gr.numVertices(catalog['dirigido'])
 
-# Funciones utilizadas para comparar elementos dentro de una lista
 
-# Funciones de ordenamiento
 
-# Funciones de comparación
+
+#####-----#####-----#####-----#####-----#####   #####---#######----#####   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   FUNCIONES DE COMPARACIÓN   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   #####---#######----#####   #####-----#####-----#####-----#####-----#####
+
+"""
+    A continuación se definen las funciones que permitirán comparar
+    y ordenar los elementos del catálogo (incluyendo las llaves de los mapas).
+
+"""
+
 def comparerutas(stop, keyvaluestop):
     """
-    Compara dos estaciones
+        Compara dos estaciones.
+
     """
     stopcode = keyvaluestop['key']
     if (stop == stopcode):
@@ -159,6 +225,8 @@ def comparerutas(stop, keyvaluestop):
         return 1
     else:
         return -1
+
+
 
 def compareStopIds(stop, keyvaluestop):
     stopcode = keyvaluestop['key']

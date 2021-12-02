@@ -20,6 +20,10 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+#####-----#####-----#####-----#####-----#####-----#####   ####---#####---####   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   IMPORTACIÓN MÓDULOS   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   ####---#####---####   #####-----#####-----#####-----#####-----#####-----#####
+
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT.graph import gr
@@ -29,24 +33,35 @@ import csv
 
 
 
+
+#####-----#####-----#####-----#####-----#####   ##########-----###########-----##########   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   FUNCIONES INICIALIZACIÓN Y CARGA DE DATOS   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   ##########-----###########-----##########   #####-----#####-----#####-----#####-----#####
+
 """
-El controlador se encarga de mediar entre la vista y el modelo.
+    Se definen las funciones que permitirán inicializar el analizador y cargar
+    los elementos de la base de datos.
+
 """
 
 # Inicialización del Catálogo
 def init():
     """
-    Llama la funcion de inicializacion  del modelo.
+        Llama la funcion de inicializacion  del modelo.
+
     """
     # catalog es utilizado para interactuar con el modelo
     catalog = model.newcatalog()
     return catalog
 
+
+
 # Funciones para la carga de datos
 def loadaereopuertos(catalog, aereopuertosfile):
     """
-    Carga los datos de los archivos CSV en el modelo.
-    Se crea un vértice por cada aereopuerto en el archivo
+        Carga los datos de los archivos CSV en el modelo.
+        Se crea un vértice por cada aereopuerto en el archivo.
+
     """
     aereopuertosfile = cf.data_dir + aereopuertosfile
     input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
@@ -55,11 +70,14 @@ def loadaereopuertos(catalog, aereopuertosfile):
         model.addaereopuerto(catalog, aereopuerto)
     return catalog
 
+
+
 def loadrutas(catalog, rutasfile):
     """
-    Carga los datos de los archivos CSV en el modelo.
-    Se crea un arco entre cada par de aereopuertos que
-    tienen una ruta en un sentido.
+        Carga los datos de los archivos CSV en el modelo.
+        Se crea un arco entre cada par de aereopuertos que
+        tienen una ruta en un sentido.
+
     """
     rutasfile = cf.data_dir + rutasfile
     input_file = csv.DictReader(open(rutasfile, encoding="utf-8"),
@@ -67,6 +85,8 @@ def loadrutas(catalog, rutasfile):
     for ruta in input_file:
         model.addruta(catalog, ruta)
     return catalog
+
+
 
 def load_routes (analyzer: dict) -> None:
     file = cf.data_dir + '\\Skylines\\routes_full.csv'
@@ -92,17 +112,29 @@ def load_routes (analyzer: dict) -> None:
                     model.add_airport(analyzer, destination)
                     model.add_route(analyzer, departure, destination, distance)
 
-# Funciones de ordenamiento
 
-# Funciones de consulta sobre el catálogo
+
+
+#####-----#####-----#####-----#####-----#####   ####---######----####   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   FUNCIONES DE CONSULTA   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   ####---######----####   #####-----#####-----######-----####-----#####
+
+"""
+    Se define las funciones que permitirán acceder a información de interés de
+    las estructuras.
+
+"""
+
 def totalrutas(catalog):
     """
-    Total de vuelos entre aereopuertos
+        Total de vuelos entre aereopuertos
+
     """
     return model.totalrutas(catalog)
 
 def totalaereopuertos(catalog):
     """
-    Total de aereopuertos en el grafo
+        Total de aereopuertos en el grafo
+        
     """
     return model.totalaereopuertos(catalog)

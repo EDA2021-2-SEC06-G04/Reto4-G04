@@ -50,7 +50,9 @@ assert cf
 # Función que imprime el menú de opciones.
 def print_menu () -> None:
     """
-        Esta función imprime el menú de interacción con el usuario. No tiene ni parámetros ni retorno.
+        Esta función imprime el menú de interacción con el usuario.
+        
+        No tiene ni parámetros ni retorno.
 
     """
     
@@ -121,7 +123,7 @@ def load_data (analyzer: dict) -> None:
 
 """
 
-catalog = None       # Crear variable que guardará el catálogo.
+analyzer = None      # Crear variable que guardará el catálogo.
 os.system('cls')     # Limpiar la consola.
 
 # Ciclo indefinido de la herramienta.
@@ -144,10 +146,10 @@ while True:
             print("""\n======================= Carga de Datos =======================\n""")
             print("Cargando información al catálogo ...")
 
-            catalog = init ()                   # Inicializar catálogo.
-            start_time = time.process_time()    # Iniciar el tiempo
-            load_data(catalog)                  # Cargar datos al catálogo.
-            stop_time = time.process_time()     # Parar el tiempo.
+            analyzer = init ()                   # Inicializar catálogo.
+            start_time = time.process_time()     # Iniciar el tiempo
+            load_data(analyzer)                  # Cargar datos al catálogo.
+            stop_time = time.process_time()      # Parar el tiempo.
 
             # Calcular tiempo de ejecución en milisegundos.
             elapsed_time_mseg = (stop_time - start_time)*1000
@@ -156,25 +158,25 @@ while True:
             print("\n<> Información cargada con éxito. <>")
             print(' - ' + "Tiempo de ejecución:", elapsed_time_mseg, "milisegundos.")
 
-            numedges = controller.totalrutas(catalog)
-            numvertex = controller.totalaereopuertos(catalog)
+            numedges = controller.total_routes(analyzer)
+            numvertex = controller.total_airports(analyzer)
             print(' - ' + 'Número de aereopuertos en el grafo dirigido: ' + str(numvertex) + '.')
             print(' - ' + 'Número de rutas de vuelo en el grafo dirigido: ' + str(numedges) + '.')
 
-            numedges = controller.totalrutasnodir(catalog)
-            numvertex = controller.totalaereopuertosnodir(catalog)
+            numedges = controller.no_dir_total_routes(analyzer)
+            numvertex = controller.nor_dir_total_airports(analyzer)
             print(' - ' + 'Numero de aereopuertos en el grafo no dirigido: ' + str(numvertex) + '.')
             print(' - ' + 'Numero de rutas de vuelo en el grafo no dirigido: ' + str(numedges) + '.')
-            print(' - ' + 'El total de ciudades es de ' + str(mp.size(catalog['ciudades'])) + '.')
+            print(' - ' + 'El total de ciudades es de ' + str(mp.size(analyzer['ciudades'])) + '.')
 
-            primeraereopuerto = controller.loadaereopuertos(catalog)[1]
+            primeraereopuerto = controller.loadaereopuertos(analyzer)[1]
             print(' - ' + 'El primer aereopueto cargado es el de', primeraereopuerto['Name'], 'de la ciudad de', primeraereopuerto['City'], 'de',
                   primeraereopuerto['Country'], 'de latitud', round(float(primeraereopuerto['Latitude']), 2), 'y longitud', str(round(float(primeraereopuerto['Longitude']), 2)) + '.')
 
-            ultimaciudad = me.getValue(mp.get(catalog['ciudadesnombre'],lt.lastElement(mp.keySet(catalog['ciudadesnombre']))))
-            ultimaciudad = lt.lastElement(ultimaciudad)
-            print(' - ' + 'La ultima ciudad cargada es ' + ultimaciudad['city'] + ' de población ' + ultimaciudad['population'] + ' de latitud',
-                  round(float(ultimaciudad['lat']), 2), 'y longitud', str(round(float(ultimaciudad['lng']) ,2)) + '.')
+            #ultimaciudad = me.getValue(mp.get(catalog['ciudadesnombre'],lt.lastElement(mp.keySet(catalog['ciudadesnombre']))))
+            #ultimaciudad = lt.lastElement(ultimaciudad)
+            #print(' - ' + 'La ultima ciudad cargada es ' + ultimaciudad['city'] + ' de población ' + ultimaciudad['population'] + ' de latitud',
+            #      round(float(ultimaciudad['lat']), 2), 'y longitud', str(round(float(ultimaciudad['lng']) ,2)) + '.')
 
         
         # Si escoge la opción 6.
@@ -187,8 +189,8 @@ while True:
             print("""\n======================= Inputs Req. 4 =======================\n""")
             
             # Guardar mapas de interés.
-            mp_city = catalog['city-id']
-            mp_id = catalog['id-city_info']
+            mp_city = analyzer['city-id']
+            mp_id = analyzer['id-city_info']
 
             # Pedir al usuario la primera ciudad y obtener la lista de ids de la ciudad con dicho nombre.
             first_city = input('Por favor, escriba el nombre de la ciudad inicial:\n  -> ')

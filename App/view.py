@@ -173,10 +173,10 @@ while True:
             print(' - ' + 'El primer aereopueto cargado es el de', primeraereopuerto['Name'], 'de la ciudad de', primeraereopuerto['City'], 'de',
                   primeraereopuerto['Country'], 'de latitud', round(float(primeraereopuerto['Latitude']), 2), 'y longitud', str(round(float(primeraereopuerto['Longitude']), 2)) + '.')
 
-            #ultimaciudad = me.getValue(mp.get(catalog['ciudadesnombre'],lt.lastElement(mp.keySet(catalog['ciudadesnombre']))))
-            #ultimaciudad = lt.lastElement(ultimaciudad)
-            #print(' - ' + 'La ultima ciudad cargada es ' + ultimaciudad['city'] + ' de población ' + ultimaciudad['population'] + ' de latitud',
-            #      round(float(ultimaciudad['lat']), 2), 'y longitud', str(round(float(ultimaciudad['lng']) ,2)) + '.')
+            lt_cities = analyzer['lt_cities']
+            last_city = lt.lastElement(lt_cities)
+            print(' - ' + 'La ultima ciudad cargada es ' + last_city['city'] + ' de población ' + str(last_city['population']) + ' de latitud',
+                  round(float(last_city['lat']), 2), 'y longitud', str(round(float(last_city['lng']) ,2)) + '.')
 
         
         # Si escoge la opción 6.

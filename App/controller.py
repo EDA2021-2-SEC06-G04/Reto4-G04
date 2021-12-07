@@ -100,6 +100,7 @@ def load_cities (analyzer: dict) -> None:
         name = city['city']                 # Guardar su nombre.
         id = city['id']                     # Guardar su id.
 
+        model.lt_add_city(analyzer, city)           # Añadirla a la lista 'lt_cities'.
         model.add_id(analyzer, name, id)            # Añadirla al mapa 'city-id'.
         model.add_city_info(analyzer, id, city)     # Añadirla al mapa 'id-city_info'.
 

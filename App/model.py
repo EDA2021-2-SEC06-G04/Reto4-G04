@@ -66,11 +66,18 @@ def new_analyzer ():
     """
     try:
         
-        # Definir variable que guarda la información del analizar e inicializarla
+        # Definir variable que guarda la información del analizar e inicializarla.
         analyzer = {}
 
-        
 
+        #####-----#####-----#####   Definición Grafos   #####-----#####-----#####
+
+        """
+            A continuación se crearán grafos por diferentes criterios.
+            Es importante notar que todos los maps referencian a la misma información.
+        
+        """
+        
         analyzer['dirigido'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
                                               size=5000,comparefunction=comparerutas)
@@ -80,6 +87,18 @@ def new_analyzer ():
                                       directed = True,
                                       size = 9076,
                                       comparefunction = compareStopIds)
+
+
+        #####-----#####-----#####   Definición Listas   #####-----#####-----#####
+
+        """
+            A continuación se crearán listas por diferentes criterios.
+            Es importante notar que todos los maps referencian a la misma información.
+        
+        """
+
+        # Lista que guarda la información de todas las ciudades.
+        analyzer['lt_cities'] = lt.newList('ARRAY_LIST')
 
 
         #####-----#####-----#####   Definición Maps/Índices   #####-----#####-----#####
@@ -253,6 +272,23 @@ def add_city_info (analyzer: dict, param_id: int, city_info: dict) -> None:
     mp_id = analyzer ['id-city_info']
     mp.put(mp_id, param_id, city_info)
 
+
+
+def lt_add_city (analyzer: dict, city_info: dict) -> None:
+    """
+        Esta función permite agregar una ciudad a la lista 'lt_cities' del catálogo.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+            -> city_info (dict): diccionario con la info. de la ciudad.
+
+        No tiene retorno.
+    
+    """
+
+    # Guardar lista y añadir la ciudad a dicha.
+    lt_cities = analyzer['lt_cities']
+    lt.addLast(lt_cities, city_info)
 
 
 #####-----#####-----#####-----#####-----#####   ###---####----###   #####-----#####-----#####-----#####-----#####

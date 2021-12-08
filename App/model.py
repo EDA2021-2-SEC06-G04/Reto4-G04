@@ -162,7 +162,7 @@ def add_airport (analyzer: dict, airport: dict) -> dict:
             -> (dict): el analizador.
 
     """
-    mp.put(analyzer['IATA'],airport['IATA'],airport)
+    mp.put(analyzer['IATA'], airport['IATA'], airport)
     mp.put(analyzer['NameAereopuertos'],airport['Name'],airport)    
     if not mp.contains(analyzer['ciudades'],airport['City']):
         mp.put(analyzer['ciudades'],airport['City'],lt.newList(datastructure='ARRAY_LIST'))

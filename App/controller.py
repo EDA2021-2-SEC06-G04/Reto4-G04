@@ -73,6 +73,7 @@ def load_data (analyzer: dict) -> None:
     loadrutas(analyzer)
     load_routes(analyzer)
     load_cities(analyzer)
+    loadaereopuertos(analyzer)
 
 
 

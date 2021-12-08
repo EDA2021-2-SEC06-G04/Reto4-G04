@@ -44,21 +44,19 @@ import csv
 
 """
 
-def init () -> dict:
+# Inicialización del Catálogo
+def init() -> dict:
     """
-        Llama la funcion de inicialización del analizador.
-
-        No tiene parámetros.
-
-        Retorno:
-            -> (dict): el analizador.
+        Llama la funcion de inicializacion  del modelo.
 
     """
-    analyzer = model.new_analyzer()
-    return analyzer
+    # catalog es utilizado para interactuar con el modelo
+    catalog = model.newcatalog()
+    return catalog
 
 
 
+# Función que carga toda la información al analizador.
 def load_data (analyzer: dict) -> None:
     """
         Esta función carga toda la información al analizador.
@@ -72,11 +70,13 @@ def load_data (analyzer: dict) -> None:
     # Invocar funciones para carga de datos.
     load_routes(analyzer)
     loadaereopuertos(analyzer)
+    loadciudades(analyzer)
     loadrutas(analyzer)
     load_cities(analyzer)
 
 
 
+# Función que carga la información de las ciudades al analizador.
 def load_cities (analyzer: dict) -> None:
     """
         Esta función carga la información de las ciudades al analizador.
@@ -90,7 +90,7 @@ def load_cities (analyzer: dict) -> None:
 
     # Crear variables que guardan la referencia al archivo de las ciudades y toda
     # su información.
-    file = cf.data_dir + '\\Skylines\\worldcities-utf8.csv'
+    file = cf.data_dir + 'worldcities-utf8.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
 
     # Iterar sobre cada ciudad de la base de datos.
@@ -100,49 +100,62 @@ def load_cities (analyzer: dict) -> None:
         name = city['city']                 # Guardar su nombre.
         id = city['id']                     # Guardar su id.
 
-        model.lt_add_city(analyzer, city)           # Añadirla a la lista 'lt_cities'.
         model.add_id(analyzer, name, id)            # Añadirla al mapa 'city-id'.
         model.add_city_info(analyzer, id, city)     # Añadirla al mapa 'id-city_info'.
+        
 
 
+# Funciones para la carga de datos
+def loadciudades(catalog):
+    """
+    Carga los datos de los archivos CSV en el modelo.
+    Se crea un vértice por cada aereopuerto en el archivo
+    """
+    ciudadesfile = cf.data_dir + 'worldcities-utf8.csv'
+    input_file = csv.DictReader(open(ciudadesfile, encoding="utf-8"),
+                                delimiter=",")
+                                
+    for ciudad in input_file:
+        model.addciudad(catalog, ciudad)
+    return catalog
 
-def loadaereopuertos(analyzer: dict) -> tuple:
+def loadaereopuertos(catalog):
     """
         Carga los datos de los archivos CSV en el modelo.
         Se crea un vértice por cada aereopuerto en el archivo.
 
     """
-    aereopuertosfile = cf.data_dir + '\\Skylines\\airports-utf8-large.csv'
+    aereopuertosfile = cf.data_dir + 'airports-utf8-small.csv'
     input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
                                 delimiter=",")
     f = None
     for aereopuerto in input_file:
         if f == None:
             f = aereopuerto
-        model.add_airport (analyzer, aereopuerto)
-    return (analyzer,f)
+        model.addaereopuerto(catalog, aereopuerto)
+    return catalog,f
 
 
 
-def loadrutas(analyzer: dict) -> dict:
+def loadrutas(catalog):
     """
         Carga los datos de los archivos CSV en el modelo.
         Se crea un arco entre cada par de aereopuertos que
         tienen una ruta en un sentido.
 
     """
-    rutasfile = cf.data_dir + '\\Skylines\\routes-utf8-large.csv'
+    rutasfile = cf.data_dir + 'routes-utf8-small.csv'
     input_file = csv.DictReader(open(rutasfile, encoding="utf-8"),
                                 delimiter=",")
     for ruta in input_file:
-        model.addruta(analyzer, ruta)
-    return analyzer
+        model.addruta(catalog, ruta)
+    return catalog
 
 
 
 def load_routes (analyzer: dict) -> None:
 
-    file = cf.data_dir + '\\Skylines\\routes-utf8-large.csv'
+    file = cf.data_dir + 'routes-utf8-small.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
 
     for route in input_file:
@@ -161,8 +174,8 @@ def load_routes (analyzer: dict) -> None:
             if (mp.contains(mp_routes, departure)):
                 mp_departure_departures = mp.get(mp_routes, departure)['value']
                 if mp.contains(mp_departure_departures, destination):
-                    model.no_dir_add_airport(analyzer, departure)
-                    model.no_dir_add_airport(analyzer, destination)
+                    model.add_airport(analyzer, departure)
+                    model.add_airport(analyzer, destination)
                     model.add_route(analyzer, departure, destination, distance)
 
 
@@ -178,58 +191,34 @@ def load_routes (analyzer: dict) -> None:
 
 """
 
-def total_routes (analyzer: dict) -> int:
+def totalrutas(catalog):
     """
-        Esta función retorna el total de rutas de vuelo (arcos) del grafo.
-
-        Parámetros:
-            -> analyzer (dict): analizador.
-
-        Retorno:
-            -> (int): total de rutas de vuelo.
+        Total de vuelos entre aereopuertos
 
     """
-    return model.total_routes(analyzer)
+    return model.totalrutas(catalog)
 
-
-def total_airports (analyzer: dict) -> int:
+def totalaereopuertos(catalog):
     """
-        Esta función retorna el total de aereopuertos (vértices) del grafo.
-
-        Parámetros:
-            -> analyzer (dict): analizador.
-
-        Retorno:
-            -> (int): total de rutas de aeropuertos.
-
-    """ 
-    return model.total_airports(analyzer)
-
-
-def no_dir_total_routes (analyzer: dict) -> int:
+        Total de aereopuertos en el grafo
+        
     """
-        Esta función retorna el total de rutas de vuelo (arcos) del grafo.
+    return model.totalaereopuertos(catalog)
 
-        Parámetros:
-            -> analyzer (dict): analizador.
-
-        Retorno:
-            -> (int): total de rutas de vuelo.
-
+def totalrutasnodir(catalog):
     """
-    return model.no_dir_total_routes(analyzer)
-
-
-
-def nor_dir_total_airports (analyzer: dict) -> int:
+    Total de vuelos entre aereopuertos
     """
-        Esta función retorna el total de aereopuertos (vértices) del grafo.
+    return model.totalrutasnodir(catalog)
 
-        Parámetros:
-            -> analyzer (dict): analizador.
-
-        Retorno:
-            -> (int): total de rutas de aeropuertos.
-
+def totalaereopuertosnodir(catalog):
     """
-    return model.nor_dir_total_airports(analyzer)
+    Total de aereopuertos en el grafo
+    """
+    return model.totalaereopuertosnodir(catalog)
+
+def interconnections(analyzer):
+    """
+    Devuelve una lista con los diccionarios de los aereopuertos más interconectados en la red
+    """
+    return model.interconnections(analyzer)

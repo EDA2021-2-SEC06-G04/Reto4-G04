@@ -159,13 +159,13 @@ while True:
             print("\n<> Información cargada con éxito. <>")
             print(' - ' + "Tiempo de ejecución:", elapsed_time_mseg, "milisegundos.")
 
-            numedges = controller.total_routes(analyzer)
-            numvertex = controller.total_airports(analyzer)
+            numedges = controller.totalrutas(analyzer)
+            numvertex = controller.totalaereopuertos(analyzer)
             print(' - ' + 'Número de aereopuertos en el grafo dirigido: ' + str(numvertex) + '.')
             print(' - ' + 'Número de rutas de vuelo en el grafo dirigido: ' + str(numedges) + '.')
 
-            numedges = controller.no_dir_total_routes(analyzer)
-            numvertex = controller.nor_dir_total_airports(analyzer)
+            numedges = controller.totalrutasnodir(analyzer)
+            numvertex = controller.totalaereopuertosnodir(analyzer)
             print(' - ' + 'Numero de aereopuertos en el grafo no dirigido: ' + str(numvertex) + '.')
             print(' - ' + 'Numero de rutas de vuelo en el grafo no dirigido: ' + str(numedges) + '.')
             print(' - ' + 'El total de ciudades es de ' + str(mp.size(analyzer['ciudades'])) + '.')
@@ -174,29 +174,21 @@ while True:
             print(' - ' + 'El primer aereopueto cargado es el de', primeraereopuerto['Name'], 'de la ciudad de', primeraereopuerto['City'], 'de',
                   primeraereopuerto['Country'], 'de latitud', round(float(primeraereopuerto['Latitude']), 2), 'y longitud', str(round(float(primeraereopuerto['Longitude']), 2)) + '.')
 
-            lt_cities = analyzer['lt_cities']
-            last_city = lt.lastElement(lt_cities)
-            print(' - ' + 'La ultima ciudad cargada es ' + last_city['city'] + ' de población ' + str(last_city['population']) + ' de latitud',
-                  round(float(last_city['lat']), 2), 'y longitud', str(round(float(last_city['lng']) ,2)) + '.')
+            #lt_cities = analyzer['lt_cities']
+            #last_city = lt.lastElement(lt_cities)
+            #print(' - ' + 'La ultima ciudad cargada es ' + last_city['city'] + ' de población ' + str(last_city['population']) + ' de latitud',
+             #     round(float(last_city['lat']), 2), 'y longitud', str(round(float(last_city['lng']) ,2)) + '.')
 
         # Si escoge la opción 2.
         elif int(inputs[0]) == 2:
-           print(gr.numEdges(catalog['dirigido']))
-           print(gr.edges(catalog['dirigido']))
-           print(gr.adjacents(catalog['dirigido'],'LED'))
-           '''interconnections = controller.interconnections(catalog)
+            interconnections = controller.interconnections(analyzer)
+            print('Los 5 aereopuertos más conectados son: \n')
+            for airport in lt.iterator(interconnections):
+                dicc = mp.get(analyzer['IATA'],airport)['value']
+                connections = mp.get(analyzer['connections'],airport)['value']
+                print('Nombre: ' + dicc['Name'] + '      Ciudad: ' + dicc['City'] + '      País: ' + dicc['Country'] + '      IATA: ' + airport + '      Conexiones: ' + str(connections) + '\n')
+            print('El número de aereopuertos conectados es de ' + str(controller.totalaereopuertos(analyzer)))
 
-
-           print('Los 5 aereopuertos más conectados son: \n')
-           for airport in lt.iterator(interconnections):
-               dicc = mp.get(catalog['IATA'],airport)['value']
-               connections = mp.get(catalog['connections'],airport)['value']
-               inrutes = (gr.adjacents(catalog['dirigido'],airport))
-               print(airport)
-               print(gr.edges(catalog['dirigido']))
-               outrutes = connections - inrutes
-               print('Nombre: ' + dicc['Name'] + '      Ciudad: ' + dicc['City'] + '      País: ' + dicc['Country'] + '      IATA: ' + airport + '      Conexiones: ' + str(connections) + '      Rutas entrantes: ' + str(inrutes) + '      Rutas salientes: ' + str(outrutes) + '\n')
-        '''
         # Si escoge la opción 6.
         elif int(inputs[0]) == 6:
 

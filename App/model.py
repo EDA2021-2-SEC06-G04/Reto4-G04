@@ -84,7 +84,7 @@ def new_analyzer ():
         
 
         analyzer['bigrafo'] = gr.newGraph(datastructure = 'ADJ_LIST',
-                                      directed = True,
+                                      directed = False,
                                       size = 9076,
                                       comparefunction = compareStopIds)
 

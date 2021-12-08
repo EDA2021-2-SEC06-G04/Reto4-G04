@@ -80,7 +80,7 @@ def new_analyzer ():
         
         analyzer['dirigido'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
-                                              size=5000,comparefunction=comparerutas)
+                                              size=300,comparefunction=comparerutas)
         
 
         analyzer['bigrafo'] = gr.newGraph(datastructure = 'ADJ_LIST',
@@ -164,7 +164,6 @@ def add_airport (analyzer: dict, airport: dict) -> dict:
     """
     mp.put(analyzer['IATA'],airport['IATA'],airport)
     mp.put(analyzer['NameAereopuertos'],airport['Name'],airport)    
-    gr.insertVertex(analyzer['dirigido'],airport['IATA'])
     if not mp.contains(analyzer['ciudades'],airport['City']):
         mp.put(analyzer['ciudades'],airport['City'],lt.newList(datastructure='ARRAY_LIST'))
     lt.addLast(me.getValue(mp.get(analyzer['ciudades'],airport['City'])),airport)
@@ -206,18 +205,34 @@ def addruta(analyzer,ruta):
     """
         Agrega una ruta aérea a los grafos y suma una conexión a cada aereopuerto
     """
+    if not gr.containsVertex(analyzer['dirigido'],ruta['Departure']):
+        gr.insertVertex(analyzer['dirigido'],ruta['Departure'])
+    if not gr.containsVertex(analyzer['dirigido'],ruta['Destination']):
+        gr.insertVertex(analyzer['dirigido'],ruta['Destination'])
+    if gr.getEdge(analyzer['dirigido'],ruta['Departure'],ruta['Destination']) == None:
+        gr.addEdge(analyzer['dirigido'],ruta['Departure'],ruta['Destination'],ruta['distance_km'])
     mp_connections = analyzer['connections']
     exists = mp.contains(mp_connections, ruta['Departure'])
     if exists:
-        mp.put(mp_connections, ruta['Departure'], me.getValue(mp.get(mp_connections,ruta['Departure'])) + 1)
+        if mp.contains(mp.get(mp_connections,ruta['Departure'])['value'],'Departure'):
+            mp.put(mp.get(mp_connections,ruta['Departure'])['value'], 'Departure', me.getValue(mp.get(mp.get(mp_connections,ruta['Departure'])['value'],'Departure')) + 1)
+        else:
+            mp.put(mp.get(mp_connections,ruta['Departure'])['value'], 'Departure', 1)
     else:
-        mp.put(mp_connections, ruta['Departure'], 1)
+        mp.put(mp_connections, ruta['Departure'], mp.newMap())
+        mp.put(mp.get(mp_connections, ruta['Departure'])['value'],'Departure', 1)
+        mp.put(mp.get(mp_connections, ruta['Departure'])['value'],'Destination', 0)
     exists = mp.contains(mp_connections, ruta['Destination'])
     if exists:
-        mp.put(mp_connections, ruta['Destination'], me.getValue(mp.get(mp_connections,ruta['Destination'])) + 1)
+        if mp.contains(mp.get(mp_connections,ruta['Destination'])['value'],'Destination'):
+            mp.put(mp.get(mp_connections,ruta['Destination'])['value'], 'Destination', me.getValue(mp.get(mp.get(mp_connections,ruta['Destination'])['value'],'Destination')) + 1)
+        else:
+            mp.put(mp.get(mp_connections,ruta['Destination'])['value'], 'Destination', 1)
     else:
-        mp.put(mp_connections, ruta['Destination'], 1)
-    gr.addEdge(analyzer['dirigido'],ruta['Departure'],ruta['Destination'],ruta['distance_km'])
+        mp.put(mp_connections, ruta['Destination'], mp.newMap())
+        mp.put(mp.get(mp_connections, ruta['Destination'])['value'],'Destination', 1)
+        mp.put(mp.get(mp_connections, ruta['Destination'])['value'],'Departure', 0)
+    
     return analyzer
 
 
@@ -433,13 +448,13 @@ def interconnections(analyzer):
     airports = mp.keySet(analyzer['connections'])
     ordered = lt.newList(datastructure='ARRAY_LIST')
     for airport in lt.iterator(airports):
-        print(ordered)
         if lt.size(ordered) == 0:
             lt.addLast(ordered,airport)
         elif lt.size(ordered) >= 5:
             i = 1
             while i <= 5:
-                if mp.get(analyzer['connections'],airport)['value'] >= mp.get(analyzer['connections'],lt.getElement(ordered,i))['value']:
+                
+                if mp.get(mp.get(analyzer['connections'],airport)['value'],'Departure')['value'] + mp.get(mp.get(analyzer['connections'],airport)['value'],'Destination')['value'] >= mp.get(mp.get(analyzer['connections'],lt.getElement(ordered,i))['value'],'Departure')['value'] + mp.get(mp.get(analyzer['connections'],lt.getElement(ordered,i))['value'],'Destination')['value']:
                     lt.insertElement(ordered,airport,i)
                     lt.removeLast(ordered)
                     break
@@ -447,7 +462,8 @@ def interconnections(analyzer):
         else:
             i = 1
             while i <= lt.size(ordered):
-                if mp.get(analyzer['connections'],airport)['value'] > mp.get(analyzer['connections'],lt.getElement(ordered,i))['value']:
+                
+                if mp.get(mp.get(analyzer['connections'],airport)['value'],'Departure')['value'] + mp.get(mp.get(analyzer['connections'],airport)['value'],'Destination')['value'] > mp.get(mp.get(analyzer['connections'],lt.getElement(ordered,i))['value'],'Departure')['value'] + mp.get(mp.get(analyzer['connections'],lt.getElement(ordered,i))['value'],'Destination')['value']:
                     lt.insertElement(ordered,airport,i)
                     break
                 elif i == lt.size(ordered):

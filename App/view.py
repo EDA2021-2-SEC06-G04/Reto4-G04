@@ -24,6 +24,7 @@
 #####-----#####-----#####-----#####-----#####-----#####   IMPORTACIÓN MÓDULOS   #####-----#####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####-----#####   ####---#####---####   #####-----#####-----#####-----#####-----#####-----#####
 
+#from DISClib.ADT.graph import edges
 import config as cf
 import os
 import time
@@ -31,6 +32,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
+from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
 assert cf
 
@@ -148,6 +150,7 @@ while True:
 
             analyzer = init ()                   # Inicializar catálogo.
             start_time = time.process_time()     # Iniciar el tiempo
+            primeraereopuerto,ultimoaereopuerto = controller.loadaereopuertos(analyzer)
             load_data(analyzer)                  # Cargar datos al catálogo.
             stop_time = time.process_time()      # Parar el tiempo.
 
@@ -160,6 +163,7 @@ while True:
 
             numedges = controller.total_routes(analyzer)
             numvertex = controller.total_airports(analyzer)
+            print(' - Número de aereopuertos totales: ' + str(mp.size(analyzer['IATA'])))
             print(' - ' + 'Número de aereopuertos en el grafo dirigido: ' + str(numvertex) + '.')
             print(' - ' + 'Número de rutas de vuelo en el grafo dirigido: ' + str(numedges) + '.')
 
@@ -169,9 +173,10 @@ while True:
             print(' - ' + 'Numero de rutas de vuelo en el grafo no dirigido: ' + str(numedges) + '.')
             print(' - ' + 'El total de ciudades es de ' + str(mp.size(analyzer['ciudades'])) + '.')
 
-            primeraereopuerto = controller.loadaereopuertos(analyzer)[1]
             print(' - ' + 'El primer aereopueto cargado es el de', primeraereopuerto['Name'], 'de la ciudad de', primeraereopuerto['City'], 'de',
                   primeraereopuerto['Country'], 'de latitud', round(float(primeraereopuerto['Latitude']), 2), 'y longitud', str(round(float(primeraereopuerto['Longitude']), 2)) + '.')
+            print(' - ' + 'El primer aereopueto cargado es el de', ultimoaereopuerto['Name'], 'de la ciudad de', ultimoaereopuerto['City'], 'de',
+                  ultimoaereopuerto['Country'], 'de latitud', round(float(ultimoaereopuerto['Latitude']), 2), 'y longitud', str(round(float(ultimoaereopuerto['Longitude']), 2)) + '.')
 
             lt_cities = analyzer['lt_cities']
             last_city = lt.lastElement(lt_cities)
@@ -183,9 +188,13 @@ while True:
             print('Los 5 aereopuertos más conectados son: \n')
             for airport in lt.iterator(interconnections):
                 dicc = mp.get(analyzer['IATA'],airport)['value']
-                connections = mp.get(analyzer['connections'],airport)['value']
-                print('Nombre: ' + dicc['Name'] + '      Ciudad: ' + dicc['City'] + '      País: ' + dicc['Country'] + '      IATA: ' + airport + '      Conexiones: ' + str(connections) + '\n')
-            print('El número de aereopuertos conectados es de ' + str(controller.total_airports(analyzer)))
+                outbound = mp.get(mp.get(analyzer['connections'],airport)['value'],'Departure')['value']
+                inbound = mp.get(mp.get(analyzer['connections'],airport)['value'],'Destination')['value']
+                connections = outbound + inbound
+
+                print('Nombre: ' + dicc['Name'] + '      Ciudad: ' + dicc['City'] + '      País: ' + dicc['Country'] + '      IATA: ' + airport + '      Conexiones: ' + str(connections) + '      Conexiones entrantes: ' + str(inbound) + '      Conexiones salientes: ' + str(outbound) + '\n')
+            print('El número de aereopuertos conectados es de ' + str(controller.total_airports(analyzer)) + '\n')
+            print('El número de aereopuertos en la red es de ' + str(mp.size(analyzer['IATA'])) )
 
         # Si escoge la opción 6.
         elif int(inputs[0]) == 3:

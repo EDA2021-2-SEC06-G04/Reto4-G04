@@ -70,9 +70,8 @@ def load_data (analyzer: dict) -> None:
 
     """
     # Invocar funciones para carga de datos.
-    load_routes(analyzer)
-    loadaereopuertos(analyzer)
     loadrutas(analyzer)
+    load_routes(analyzer)
     load_cities(analyzer)
 
 
@@ -115,12 +114,14 @@ def loadaereopuertos(analyzer: dict) -> tuple:
     aereopuertosfile = cf.data_dir + '\\Skylines\\airports-utf8-small.csv'
     input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
                                 delimiter=",")
+    z = None
     f = None
     for aereopuerto in input_file:
-        if f == None:
-            f = aereopuerto
+        if z == None:
+            z = aereopuerto
+        f = aereopuerto
         model.add_airport (analyzer, aereopuerto)
-    return (analyzer,f)
+    return z,f
 
 
 

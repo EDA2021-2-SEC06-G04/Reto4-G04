@@ -117,6 +117,8 @@ def new_analyzer ():
 
         analyzer['ciudades'] = mp.newMap(maptype='PROBING', numelements=9000)
 
+        analyzer['connections'] = mp.newMap(maptype='PROBING')
+
         analyzer['routes'] = mp.newMap(numelements=9076,
                                   maptype = 'PROBING')
 
@@ -200,16 +202,24 @@ def add_route (analyzer: dict, origin: str, destination: str, distance: float) -
      
 
 
-def addruta(catalog,ruta):
+def addruta(analyzer,ruta):
     """
-        Agrega una ruta aérea a los grafos.
+        Agrega una ruta aérea a los grafos y suma una conexión a cada aereopuerto
+    """
+    mp_connections = analyzer['connections']
+    exists = mp.contains(mp_connections, ruta['Departure'])
+    if exists:
+        mp.put(mp_connections, ruta['Departure'], me.getValue(mp.get(mp_connections,ruta['Departure'])) + 1)
+    else:
+        mp.put(mp_connections, ruta['Departure'], 1)
+    exists = mp.contains(mp_connections, ruta['Destination'])
+    if exists:
+        mp.put(mp_connections, ruta['Destination'], me.getValue(mp.get(mp_connections,ruta['Destination'])) + 1)
+    else:
+        mp.put(mp_connections, ruta['Destination'], 1)
+    gr.addEdge(analyzer['dirigido'],ruta['Departure'],ruta['Destination'],ruta['distance_km'])
+    return analyzer
 
-    """
-    
-    #vertices = gr.vertices(catalog['dirigido'])
-    
-    gr.addEdge(catalog['dirigido'],ruta['Departure'],ruta['Destination'],ruta['distance_km'])
-    return catalog
 
 
 
@@ -415,6 +425,38 @@ def nor_dir_total_airports (analyzer: dict) -> int:
 
     """
     return gr.numVertices(analyzer['bigrafo'])
+
+def interconnections(analyzer):
+    """
+    Retorna una lista con los 5 aereopuetos más interconectados de la red (solo sus IATA)
+    """
+    airports = mp.keySet(analyzer['connections'])
+    ordered = lt.newList(datastructure='ARRAY_LIST')
+    for airport in lt.iterator(airports):
+        print(ordered)
+        if lt.size(ordered) == 0:
+            lt.addLast(ordered,airport)
+        elif lt.size(ordered) >= 5:
+            i = 1
+            while i <= 5:
+                if mp.get(analyzer['connections'],airport)['value'] >= mp.get(analyzer['connections'],lt.getElement(ordered,i))['value']:
+                    lt.insertElement(ordered,airport,i)
+                    lt.removeLast(ordered)
+                    break
+                i += 1
+        else:
+            i = 1
+            while i <= lt.size(ordered):
+                if mp.get(analyzer['connections'],airport)['value'] > mp.get(analyzer['connections'],lt.getElement(ordered,i))['value']:
+                    lt.insertElement(ordered,airport,i)
+                    break
+                elif i == lt.size(ordered):
+                    lt.addLast(ordered,airport)
+                    break
+                else:
+                    i += 1
+    return ordered
+
 
 
 

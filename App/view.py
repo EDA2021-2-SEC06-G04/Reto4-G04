@@ -178,9 +178,17 @@ while True:
             print(' - ' + 'La ultima ciudad cargada es ' + last_city['city'] + ' de población ' + str(last_city['population']) + ' de latitud',
                   round(float(last_city['lat']), 2), 'y longitud', str(round(float(last_city['lng']) ,2)) + '.')
 
-        
+        elif int(inputs[0]) == 2:
+            interconnections = controller.interconnections(analyzer)
+            print('Los 5 aereopuertos más conectados son: \n')
+            for airport in lt.iterator(interconnections):
+                dicc = mp.get(analyzer['IATA'],airport)['value']
+                connections = mp.get(analyzer['connections'],airport)['value']
+                print('Nombre: ' + dicc['Name'] + '      Ciudad: ' + dicc['City'] + '      País: ' + dicc['Country'] + '      IATA: ' + airport + '      Conexiones: ' + str(connections) + '\n')
+            print('El número de aereopuertos conectados es de ' + str(controller.total_airports(analyzer)))
+
         # Si escoge la opción 6.
-        elif int(inputs[0]) == 6:
+        elif int(inputs[0]) == 3:
 
             # Limpiar la consola.
             os.system('cls')

@@ -112,7 +112,7 @@ def loadaereopuertos(analyzer: dict) -> tuple:
         Se crea un vértice por cada aereopuerto en el archivo.
 
     """
-    aereopuertosfile = cf.data_dir + '\\Skylines\\airports-utf8-large.csv'
+    aereopuertosfile = cf.data_dir + '\\Skylines\\airports-utf8-small.csv'
     input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
                                 delimiter=",")
     f = None
@@ -131,7 +131,7 @@ def loadrutas(analyzer: dict) -> dict:
         tienen una ruta en un sentido.
 
     """
-    rutasfile = cf.data_dir + '\\Skylines\\routes-utf8-large.csv'
+    rutasfile = cf.data_dir + '\\Skylines\\routes-utf8-small.csv'
     input_file = csv.DictReader(open(rutasfile, encoding="utf-8"),
                                 delimiter=",")
     for ruta in input_file:
@@ -142,7 +142,7 @@ def loadrutas(analyzer: dict) -> dict:
 
 def load_routes (analyzer: dict) -> None:
 
-    file = cf.data_dir + '\\Skylines\\routes-utf8-large.csv'
+    file = cf.data_dir + '\\Skylines\\routes-utf8-small.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
 
     for route in input_file:
@@ -233,3 +233,9 @@ def nor_dir_total_airports (analyzer: dict) -> int:
 
     """
     return model.nor_dir_total_airports(analyzer)
+
+def interconnections(analyzer):
+    """
+    Devuelve una lista con los diccionarios de los aereopuertos más interconectados en la red
+    """
+    return model.interconnections(analyzer)

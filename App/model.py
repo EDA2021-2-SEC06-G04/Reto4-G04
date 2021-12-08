@@ -33,8 +33,10 @@ from DISClib.ADT.graph import gr
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import list as lt
+from DISClib.ADT import orderedmap as om
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Sorting import mergesort
 from DISClib.Utils import error as error
 assert config
 
@@ -100,6 +102,8 @@ def newcatalog():
         analyzer['ciudades'] = mp.newMap(maptype='PROBING', numelements=9000)
 
         analyzer['ciudadesnombre'] = mp.newMap(maptype='PROBING', numelements=9000)
+
+        analyzer['connections'] = mp.newMap(maptype='PROBING')
 
         analyzer['routes'] = mp.newMap(numelements=9076,
                                   maptype = 'PROBING')
@@ -185,16 +189,42 @@ def add_route (analyzer: dict, origin: str, destination: str, distance: float) -
         gr.addEdge(analyzer['bigrafo'], origin, destination, distance)
      
 
-def addruta(catalog,ruta):
+def addruta(analyzer,ruta):
     """
-        Agrega una ruta aérea a los grafos.
+        Agrega una ruta aérea a los grafos y suma una conexión a cada aereopuerto
 
     """
     
-    #vertices = gr.vertices(catalog['dirigido'])
+    '''mp_connections = analyzer['connections']
+    exists = mp.contains(mp_connections, ruta['Departure'])
+
+    if exists:
+        try:
+            mp.put(mp.get(mp_connections,ruta['Departure'])['value'], 'Departure', mp.get(mp.get(mp_connections,ruta['Departure'])['value'],'Departure')['value'] + 1)
+            mp.put(mp.get(mp_connections,ruta['Departure'])['value'], 'Total', mp.get(mp.get(mp_connections,ruta['Departure'])['value'],'Total')['value'] + 1)
+        except:
+            mp.put(mp_connections, ruta['Departure'], mp.newMap())
+            mp.put(mp.get(mp_connections,ruta['Departure'])['value'],'Departure', 1)
+    else:
+        mp.put(mp_connections, ruta['Departure'], mp.newMap())
+        mp.put(mp.get(mp_connections,ruta['Departure'])['value'],'Departure', 1)
+        mp.put(mp.get(mp_connections,ruta['Departure'])['value'],'Total', 1)
     
-    gr.addEdge(catalog['dirigido'],ruta['Departure'],ruta['Destination'],ruta['distance_km'])
-    return catalog
+    exists = mp.contains(mp_connections, ruta['Destination'])
+
+    if exists:
+        try:
+            mp.put(mp.get(mp_connections,ruta['Destination'])['value'], 'Destination', mp.get(mp.get(mp_connections,ruta['Destination'])['value'],'Destination')['value'] + 1)
+            mp.put(mp.get(mp_connections,ruta['Destination'])['value'], 'Total', mp.get(mp.get(mp_connections,ruta['Destination'])['value'],'Total')['value'] + 1)
+        except:
+            mp.put(mp_connections, ruta['Destination'], mp.newMap())
+            mp.put(mp.get(mp_connections,ruta['Destination'])['value'],'Destination', 1)
+    else:
+        mp.put(mp_connections, ruta['Destination'], mp.newMap())
+        mp.put(mp.get(mp_connections,ruta['Destination'])['value'],'Destination', 1)
+        mp.put(mp.get(mp_connections,ruta['Destination'])['value'],'Total', 1)'''
+    
+    gr.addEdge(analyzer['dirigido'],ruta['Departure'],ruta['Destination'],ruta['distance_km'])
 
 
 
@@ -360,7 +390,39 @@ def totalaereopuertosnodir(catalog):
     """
     return gr.numVertices(catalog['bigrafo'])
 
-# Funciones utilizadas para comparar elementos dentro de una lista
+def interconnections(analyzer):
+    """
+    Retorna una lista con los 5 aereopuetos más interconectados de la red (solo sus IATA)
+    """
+    airports = mp.keySet(analyzer['connections'])
+    print(airports)
+    ordered = lt.newList(datastructure='ARRAY_LIST')
+    for airport in lt.iterator(airports):
+        print(ordered)
+        if lt.size(ordered) == 0:
+            lt.addLast(ordered,airport)
+        elif lt.size(ordered) >= 5:
+            i = 1
+            while i <= 5:
+                if mp.get(mp.get(analyzer['connections'],airport)['value'],'Total')['value'] >= mp.get(mp.get(analyzer['connections'],lt.getElement(ordered,i))['value'],'Total')['value']:
+                    lt.insertElement(ordered,airport,i)
+                    lt.removeLast(ordered)
+                    break
+                i += 1
+        else:
+            i = 1
+            while i <= lt.size(ordered):
+                if mp.get(mp.get(analyzer['connections'],airport)['value'],'Total')['value'] > mp.get(mp.get(analyzer['connections'],lt.getElement(ordered,i))['value'],'Total')['value']:
+                    lt.insertElement(ordered,airport,i)
+                    break
+                elif i == lt.size(ordered):
+                    lt.addLast(ordered,airport)
+                    break
+                else:
+                    i += 1
+        
+
+    return ordered
 
 
 
@@ -415,3 +477,4 @@ def cmp_cities (city:dict, id: int) -> int:
     elif (id_city < id):
         ans = 1
     return ans
+

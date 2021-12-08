@@ -31,6 +31,7 @@ import sys
 import controller
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
+from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
 assert cf
 
@@ -176,7 +177,24 @@ while True:
             print(' - ' + 'La ultima ciudad cargada es ' + ultimaciudad['city'] + ' de población ' + ultimaciudad['population'] + ' de latitud',
                   round(float(ultimaciudad['lat']), 2), 'y longitud', str(round(float(ultimaciudad['lng']) ,2)) + '.')
 
-        
+        # Si escoge la opción 2.
+        elif int(inputs[0]) == 2:
+           print(gr.numEdges(catalog['dirigido']))
+           print(gr.edges(catalog['dirigido']))
+           print(gr.adjacents(catalog['dirigido'],'LED'))
+           '''interconnections = controller.interconnections(catalog)
+
+
+           print('Los 5 aereopuertos más conectados son: \n')
+           for airport in lt.iterator(interconnections):
+               dicc = mp.get(catalog['IATA'],airport)['value']
+               connections = mp.get(catalog['connections'],airport)['value']
+               inrutes = (gr.adjacents(catalog['dirigido'],airport))
+               print(airport)
+               print(gr.edges(catalog['dirigido']))
+               outrutes = connections - inrutes
+               print('Nombre: ' + dicc['Name'] + '      Ciudad: ' + dicc['City'] + '      País: ' + dicc['Country'] + '      IATA: ' + airport + '      Conexiones: ' + str(connections) + '      Rutas entrantes: ' + str(inrutes) + '      Rutas salientes: ' + str(outrutes) + '\n')
+        '''
         # Si escoge la opción 6.
         elif int(inputs[0]) == 6:
 

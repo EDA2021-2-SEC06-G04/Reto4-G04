@@ -90,7 +90,7 @@ def load_cities (analyzer: dict) -> None:
 
     # Crear variables que guardan la referencia al archivo de las ciudades y toda
     # su información.
-    file = cf.data_dir + '\\Skylines\\worldcities.csv'
+    file = cf.data_dir + 'worldcities-utf8.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
 
     # Iterar sobre cada ciudad de la base de datos.
@@ -111,7 +111,7 @@ def loadciudades(catalog):
     Carga los datos de los archivos CSV en el modelo.
     Se crea un vértice por cada aereopuerto en el archivo
     """
-    ciudadesfile = cf.data_dir + '\\Skylines\\worldcities.csv'
+    ciudadesfile = cf.data_dir + 'worldcities-utf8.csv'
     input_file = csv.DictReader(open(ciudadesfile, encoding="utf-8"),
                                 delimiter=",")
                                 
@@ -125,7 +125,7 @@ def loadaereopuertos(catalog):
         Se crea un vértice por cada aereopuerto en el archivo.
 
     """
-    aereopuertosfile = cf.data_dir + '\\Skylines\\airports_full.csv'
+    aereopuertosfile = cf.data_dir + 'airports-utf8-small.csv'
     input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
                                 delimiter=",")
     f = None
@@ -144,7 +144,7 @@ def loadrutas(catalog):
         tienen una ruta en un sentido.
 
     """
-    rutasfile = cf.data_dir + '\\Skylines\\routes_full.csv'
+    rutasfile = cf.data_dir + 'routes-utf8-small.csv'
     input_file = csv.DictReader(open(rutasfile, encoding="utf-8"),
                                 delimiter=",")
     for ruta in input_file:
@@ -155,7 +155,7 @@ def loadrutas(catalog):
 
 def load_routes (analyzer: dict) -> None:
 
-    file = cf.data_dir + '\\Skylines\\routes_full.csv'
+    file = cf.data_dir + 'routes-utf8-small.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
 
     for route in input_file:
@@ -216,3 +216,9 @@ def totalaereopuertosnodir(catalog):
     Total de aereopuertos en el grafo
     """
     return model.totalaereopuertosnodir(catalog)
+
+def interconnections(analyzer):
+    """
+    Devuelve una lista con los diccionarios de los aereopuertos más interconectados en la red
+    """
+    return model.interconnections(analyzer)

@@ -49,18 +49,17 @@ assert config
 
 """
     Se define la estructura que contiene el analizador.
-    Esta posee una
 
 """
 
-# Construccion de modelos
-def newcatalog():
+def new_analyzer ():
     """ 
-        Inicializa el catálogo
+        Esta funución permite inicializar el analizador. Este cuenta con las siguientes estructuras:
+         1- city-id (mapa).
+         2- id-city_info (mapa).
 
         dirigido: grafo dirigido con vértices en cada aereopuerto y arcos para
         cada vuelo que los relaciona en la dirección correspondiente.
-
         no_dirigido: Grafo para representar las relaciones entre aereopuertos de 
         forma que dos aereopuertos se relacionan solo si hay un vuelo directo de ida y otro de vuelta entre ambos.
 
@@ -69,11 +68,18 @@ def newcatalog():
     """
     try:
         
-        # Definir variable que guarda la información del analizar e inicializarla
+        # Definir variable que guarda la información del analizar e inicializarla.
         analyzer = {}
 
-        
 
+        #####-----#####-----#####   Definición Grafos   #####-----#####-----#####
+
+        """
+            A continuación se crearán grafos por diferentes criterios.
+            Es importante notar que todos los maps referencian a la misma información.
+        
+        """
+        
         analyzer['dirigido'] = gr.newGraph(datastructure='ADJ_LIST',
                                               directed=True,
                                               size=5000,comparefunction=comparerutas)
@@ -83,6 +89,18 @@ def newcatalog():
                                       directed = True,
                                       size = 9076,
                                       comparefunction = compareStopIds)
+
+
+        #####-----#####-----#####   Definición Listas   #####-----#####-----#####
+
+        """
+            A continuación se crearán listas por diferentes criterios.
+            Es importante notar que todos los maps referencian a la misma información.
+        
+        """
+
+        # Lista que guarda la información de todas las ciudades.
+        analyzer['lt_cities'] = lt.newList('ARRAY_LIST')
 
 
         #####-----#####-----#####   Definición Maps/Índices   #####-----#####-----#####
@@ -100,10 +118,6 @@ def newcatalog():
         analyzer['IATA'] = mp.newMap(maptype='PROBING', numelements=10000)
 
         analyzer['ciudades'] = mp.newMap(maptype='PROBING', numelements=9000)
-
-        analyzer['ciudadesnombre'] = mp.newMap(maptype='PROBING', numelements=9000)
-
-        analyzer['connections'] = mp.newMap(maptype='PROBING')
 
         analyzer['routes'] = mp.newMap(numelements=9076,
                                   maptype = 'PROBING')
@@ -131,34 +145,30 @@ def newcatalog():
 #####-----#####-----#####-----#####-----#####   ###---###----###   #####-----#####-----######-----####-----#####
 
 """
-    Se definen las funciones que permitirán añadir elementos al catálogo.
+    Se definen las funciones que permitirán añadir elementos al las
+    estrucutras del analizador.
 
 """
 
-def addaereopuerto(catalog,aereopuerto):
+def add_airport (analyzer: dict, airport: dict) -> dict:
     """
-        Agrega un aereopuerto a los grafos y mapas
+        Agrega un aereopuerto a las estrucutras del analizador.
 
-    """
-    mp.put(catalog['IATA'],aereopuerto['IATA'],aereopuerto)
-    mp.put(catalog['NameAereopuertos'],aereopuerto['Name'],aereopuerto)    
-    gr.insertVertex(catalog['dirigido'],aereopuerto['IATA'])
-    if not mp.contains(catalog['ciudades'],aereopuerto['City']):
-        mp.put(catalog['ciudades'],aereopuerto['City'],lt.newList(datastructure='ARRAY_LIST'))
-    lt.addLast(me.getValue(mp.get(catalog['ciudades'],aereopuerto['City'])),aereopuerto)
-    return catalog
+        Parámetros:
+            -> analyzer (dict): analizador.
+            -> airport (dict): diccionario que representa un aeropuerto.
 
-
-
-def addciudad(catalog,ciudad):
-    """
-        Agrega una ciudad al mapa por su nombre.
+        Retorno:
+            -> (dict): el analizador.
 
     """
-    if not mp.contains(catalog['ciudadesnombre'],ciudad['city']):
-        mp.put(catalog['ciudadesnombre'],ciudad['city'],lt.newList(datastructure='ARRAY_LIST'))
-    lt.addLast(me.getValue(mp.get(catalog['ciudadesnombre'],ciudad['city'])),ciudad)
-    return catalog
+    mp.put(analyzer['IATA'],airport['IATA'],airport)
+    mp.put(analyzer['NameAereopuertos'],airport['Name'],airport)    
+    gr.insertVertex(analyzer['dirigido'],airport['IATA'])
+    if not mp.contains(analyzer['ciudades'],airport['City']):
+        mp.put(analyzer['ciudades'],airport['City'],lt.newList(datastructure='ARRAY_LIST'))
+    lt.addLast(me.getValue(mp.get(analyzer['ciudades'],airport['City'])),airport)
+    return analyzer
 
 
 
@@ -178,9 +188,11 @@ def mp_add_route (analyzer: dict, departure: str, destination:str, distance: flo
         mp.put(mp_routes, departure, new_mp_destinatios)
 
 
-def add_airport (analyzer: dict, airport_id: str) -> None:
+
+def no_dir_add_airport (analyzer: dict, airport_id: str) -> None:
     if not (gr.containsVertex(analyzer['bigrafo'], airport_id)):
         gr.insertVertex(analyzer['bigrafo'], airport_id)
+
 
 
 def add_route (analyzer: dict, origin: str, destination: str, distance: float) -> None:
@@ -228,7 +240,6 @@ def addruta(analyzer,ruta):
 
 
 
-# Función que añade una pareja llave-valor al map 'city-id'.
 def add_id (analyzer: dict, param_city: str, id: int) -> None:
     """
         Esta función permite agregar una pareja llave-valor al map 'city-id' del catálogo.
@@ -267,7 +278,6 @@ def add_id (analyzer: dict, param_city: str, id: int) -> None:
 
 
 
-# Función que añade una pareja llave-valor al map 'id-city_info'.
 def add_city_info (analyzer: dict, param_id: int, city_info: dict) -> None:
     """
         Esta función permite agregar una pareja llave-valor al map 'id-city_info' del catálogo.
@@ -291,6 +301,23 @@ def add_city_info (analyzer: dict, param_id: int, city_info: dict) -> None:
 
 
 
+def lt_add_city (analyzer: dict, city_info: dict) -> None:
+    """
+        Esta función permite agregar una ciudad a la lista 'lt_cities' del catálogo.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+            -> city_info (dict): diccionario con la info. de la ciudad.
+
+        No tiene retorno.
+    
+    """
+
+    # Guardar lista y añadir la ciudad a dicha.
+    lt_cities = analyzer['lt_cities']
+    lt.addLast(lt_cities, city_info)
+
+
 #####-----#####-----#####-----#####-----#####   ###---####----###   #####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####   CREACIÓN DE DATOS   #####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####   ###---####----###   #####-----#####-----######-----####-----#####
@@ -301,7 +328,6 @@ def add_city_info (analyzer: dict, param_id: int, city_info: dict) -> None:
 
 """
 
-# Función que crea una ciudad.
 def new_city (city_info: dict) -> dict:
     """
         Esta función permite crear un diccionario que almacenará la información de interés de una ciudad.
@@ -362,33 +388,60 @@ def new_city (city_info: dict) -> dict:
 
 """
 
-def totalrutas(catalog):
+def total_routes (analyzer: dict) -> int:
     """
-        Retorna el total de rutas de vuelo (arcos) del grafo
+        Esta función retorna el total de rutas de vuelo (arcos) del grafo.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+
+        Retorno:
+            -> (int): total de rutas de vuelo.
 
     """
-    return gr.numEdges(catalog['dirigido'])
+    return gr.numEdges(analyzer['dirigido'])
 
 
-
-def totalaereopuertos(catalog):
+def total_airports (analyzer: dict) -> int:
     """
-        Retorna el total de aereopuertos (vértices) del grafo
+        Esta función retorna el total de aereopuertos (vértices) del grafo.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+
+        Retorno:
+            -> (int): total de rutas de aeropuertos.
 
     """ 
-    return gr.numVertices(catalog['dirigido'])
+    return gr.numVertices(analyzer['dirigido'])
 
-def totalrutasnodir(catalog):
-    """
-    Retorna el total de rutas de vuelo (arcos) del grafo
-    """
-    return gr.numEdges(catalog['bigrafo'])
 
-def totalaereopuertosnodir(catalog):
+def no_dir_total_routes (analyzer: dict) -> int:
     """
-    Retorna el total de aereopuertos (vértices) del grafo
+        Esta función retorna el total de rutas de vuelo (arcos) del grafo.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+
+        Retorno:
+            -> (int): total de rutas de vuelo.
+
     """
-    return gr.numVertices(catalog['bigrafo'])
+    return gr.numEdges(analyzer['bigrafo'])
+
+
+def nor_dir_total_airports (analyzer: dict) -> int:
+    """
+        Esta función retorna el total de aereopuertos (vértices) del grafo.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+
+        Retorno:
+            -> (int): total de rutas de aeropuertos.
+
+    """
+    return gr.numVertices(analyzer['bigrafo'])
 
 def interconnections(analyzer):
     """
@@ -477,4 +530,3 @@ def cmp_cities (city:dict, id: int) -> int:
     elif (id_city < id):
         ans = 1
     return ans
-

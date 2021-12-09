@@ -397,6 +397,38 @@ while True:
 
 
 
+        # Si escoge la opción 6.
+        elif int(inputs[0]) == 6:
+
+            # Limpiar la consola.
+            os.system('cls')
+
+            # Imprimir mensaje de carga.
+            print("""\n======================= Inputs Req. 5 =======================\n""")
+                
+            # Preguntar al usuario por inputs.
+            param_iata = input('Por favor, escriba el código IATA del aeropuerto fuera de funcionamiento:\n  -> ')
+
+            # Imprimir mensaje de carga.
+            print("""\n====================== Outputs Req. 5 =======================\n""")
+
+            # Iniciar el tiempo.
+            start_time = time.process_time()
+
+            # Guardar respuesta del requerimiento 3.
+            ans_req_5 = req_5(analyzer, param_iata)
+
+            # Parar el tiempo.
+            stop_time = time.process_time()
+
+            # Calcular tiempo de ejecución en milisegundos e imprimirlo.
+            elapsed_time_mseg = (stop_time - start_time) * 1000
+            print("Tiempo de ejecución del requerimiento:", elapsed_time_mseg, "milisegundos.\n")
+
+            # Imprimir respuesta.
+            print_req_5(ans_req_5, param_iata)
+
+
         # Opción salir.
         elif int(inputs[0]) == 0:
             

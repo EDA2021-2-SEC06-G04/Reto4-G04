@@ -556,6 +556,19 @@ def req_5 (analyzer: dict, param_iata: str) -> dict:
     return lt_return
 
 
+
+def req_2 (analyzer: dict, iata_1: str, iata_2: str) -> tuple:
+    graph = analyzer['dirigido']
+    scc_str = scc.KosarajuSCC(graph)
+    connected = scc.connectedComponents(scc_str)
+    strongly_con = scc.stronglyConnected(scc_str, iata_1, iata_2)
+    mp_iata = analyzer['IATA']
+    lt_airports = lt.newList('SINGLE_LINKED')
+    lt.addLast(lt_airports, mp.get(mp_iata, iata_1)['value'])
+    lt.addLast(lt_airports, mp.get(mp_iata, iata_2)['value'])
+    return (connected, strongly_con, lt_airports)
+
+
 #####-----#####-----#####-----#####-----#####   #####---#######----#####   #####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####   FUNCIONES DE COMPARACIÓN   #####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####   #####---#######----#####   #####-----#####-----#####-----#####-----#####

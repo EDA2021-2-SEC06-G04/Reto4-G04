@@ -134,6 +134,18 @@ def print_req_5 (lt_ady: dict, param_iata: str) -> None:
 
 
 
+def print_req_2 (ans: tuple, iara_1, iara_2) -> None:
+    connected , strongly_con, lt_airports = ans
+    are_str_con = 'sí' if (strongly_con == True) else 'no'
+    print('La cantidad de clústeres presentes en la red de transporte aéreo es:', str(connected) + '.')
+    print('Los aeropuertos', iara_1, 'y', iara_2, are_str_con, 'se encuentran en el mismo clúster.')
+    print('La información acerca de los dos aeropuetos buscados se dispone a continuación:\n')
+    print_reqs(lt_airports)
+    print("#" * 120)
+    print()
+
+
+
 
 #####-----#####-----#####-----#####-----#####-----#####   ######---######---######   #####-----#####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####-----#####   FUNCIONES CARGA DE DATOS   #####-----#####-----#####-----#####-----#####-----#####
@@ -204,6 +216,11 @@ def req_5 (analyzer: dict, param_iata: str) -> dict:
     """
     lt_return = controller.req_5(analyzer, param_iata)
     return (lt_return)
+
+
+
+def req_2 (analyzer: dict, iata_1: str, iata_2: str) -> tuple:
+    return controller.req_2(analyzer, iata_1, iata_2)
 
 
 
@@ -324,6 +341,42 @@ while True:
             # Calcular tiempo de ejecución en milisegundos e imprimirlo.
             elapsed_time_mseg = (stop_time - start_time) * 1000
             print("Tiempo de ejecución del requerimiento:", elapsed_time_mseg, "milisegundos.\n")
+
+
+        
+        # Si escoge la opción 3.
+        elif int(inputs[0]) == 3:
+
+            # Limpiar la consola.
+            os.system('cls')
+
+            # Imprimir mensaje de carga.
+            print("""\n======================= Inputs Req. 2 =======================\n""")
+                
+            # Preguntar al usuario por inputs.
+            param_iata_1 = input('Por favor, escriba el código IATA del primer aeropuerto:\n  -> ')
+            param_iata_2 = input('Por favor, escriba el código IATA del segundo aeropuerto:\n  -> ')
+
+            # Imprimir mensaje de carga.
+            print("""\n====================== Outputs Req. 2 =======================\n""")
+
+            # Iniciar el tiempo.
+            start_time = time.process_time()
+
+            # Guardar respuesta del requerimiento 3.
+            ans_req_2 = req_2(analyzer, param_iata_1, param_iata_2)
+
+            # Parar el tiempo.
+            stop_time = time.process_time()
+
+            # Calcular tiempo de ejecución en milisegundos e imprimirlo.
+            elapsed_time_mseg = (stop_time - start_time) * 1000
+            print("Tiempo de ejecución del requerimiento:", elapsed_time_mseg, "milisegundos.\n")
+
+            # Imprimir respuesta.
+            print_req_2(ans_req_2, param_iata_1, param_iata_2)
+
+
 
         # Si escoge la opción 4.
         elif int(inputs[0]) == 4:

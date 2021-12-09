@@ -28,6 +28,7 @@
 #####-----#####-----#####-----#####-----#####   IMPORTACIÓN MÓDULOS   #####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####   ####---#####---####   #####-----#####-----#####-----#####-----#####
 
+from math import inf
 import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as mp
@@ -36,6 +37,7 @@ from DISClib.ADT import list as lt
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+from haversine import haversine
 assert config
 
 
@@ -115,7 +117,7 @@ def new_analyzer ():
 
         analyzer['IATA'] = mp.newMap(maptype='PROBING', numelements=10000)
 
-        analyzer['ciudades'] = mp.newMap(maptype='PROBING', numelements=9000)
+        analyzer['cities_airports'] = mp.newMap(maptype='PROBING', numelements=9000)
 
         analyzer['connections'] = mp.newMap(maptype='PROBING')
 
@@ -164,9 +166,9 @@ def add_airport (analyzer: dict, airport: dict) -> dict:
     """
     mp.put(analyzer['IATA'],airport['IATA'],airport)
     mp.put(analyzer['NameAereopuertos'],airport['Name'],airport)    
-    if not mp.contains(analyzer['ciudades'],airport['City']):
-        mp.put(analyzer['ciudades'],airport['City'],lt.newList(datastructure='ARRAY_LIST'))
-    lt.addLast(me.getValue(mp.get(analyzer['ciudades'],airport['City'])),airport)
+    if not mp.contains(analyzer['cities_airports'],airport['City']):
+        mp.put(analyzer['cities_airports'],airport['City'],lt.newList(datastructure='ARRAY_LIST'))
+    lt.addLast(me.getValue(mp.get(analyzer['cities_airports'],airport['City'])),airport)
     return analyzer
 
 
@@ -210,7 +212,7 @@ def addruta(analyzer,ruta):
     if not gr.containsVertex(analyzer['dirigido'],ruta['Destination']):
         gr.insertVertex(analyzer['dirigido'],ruta['Destination'])
     if gr.getEdge(analyzer['dirigido'],ruta['Departure'],ruta['Destination']) == None:
-        gr.addEdge(analyzer['dirigido'],ruta['Departure'],ruta['Destination'],ruta['distance_km'])
+        gr.addEdge(analyzer['dirigido'],ruta['Departure'],ruta['Destination'],float(ruta['distance_km']))
     mp_connections = analyzer['connections']
     exists = mp.contains(mp_connections, ruta['Departure'])
     if exists:
@@ -385,7 +387,7 @@ def new_city (city_info: dict) -> dict:
     las estructuras.
 
 """
-
+#Consultas en al carga de datos
 def total_routes (analyzer: dict) -> int:
     """
         Esta función retorna el total de rutas de vuelo (arcos) del grafo.
@@ -441,6 +443,7 @@ def nor_dir_total_airports (analyzer: dict) -> int:
     """
     return gr.numVertices(analyzer['bigrafo'])
 
+#Requerimiento 1
 def interconnections(analyzer):
     """
     Retorna una lista con los 5 aereopuetos más interconectados de la red (solo sus IATA)
@@ -473,7 +476,30 @@ def interconnections(analyzer):
                     i += 1
     return ordered
 
+#Requerimiento 3
+def closestAirport(analyzer,city):
+    latitud = float(city['lat'])
+    longitud = float(city['lng'])
+    list = mp.keySet(analyzer['IATA'])
+    minDis = lt.firstElement(list)
+    for airport in lt.iterator(list):
+        airport_lat = float(mp.get(analyzer['IATA'],airport)['value']['Latitude'])
+        airport_lng = float(mp.get(analyzer['IATA'],airport)['value']['Longitude'])
+        min_lat = float(mp.get(analyzer['IATA'],minDis)['value']['Latitude'])
+        min_lng = float(mp.get(analyzer['IATA'],minDis)['value']['Longitude'])
+        if haversine((latitud,longitud),(airport_lat,airport_lng )) < haversine((latitud,longitud),(min_lat,min_lng )):
+            minDis = airport
+    return minDis
 
+def shortestRoute(analyzer,first_airport,last_airport):
+    route = djk.Dijkstra(analyzer['dirigido'],first_airport)
+    edge = mp.get(route['visited'],last_airport)['value']['edgeTo']
+    distance = mp.get(route['visited'],last_airport)['value']['distTo']
+    finalRoute = lt.newList()
+    while edge != None:
+        lt.addFirst(finalRoute,edge)
+        edge = mp.get(route['visited'],edge['vertexA'])['value']['edgeTo']
+    return finalRoute,distance
 
 
 

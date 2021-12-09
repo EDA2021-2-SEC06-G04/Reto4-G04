@@ -240,3 +240,16 @@ def interconnections(analyzer):
     Devuelve una lista con los diccionarios de los aereopuertos más interconectados en la red
     """
     return model.interconnections(analyzer)
+
+def closestAirport(analyzer,city):
+    '''
+    Devuelve el diccionario del aereopuerto más cercano por coordenadas a las coordenadas de la ciudad que llega
+    como un diccionario por parámetro.
+    '''
+    return model.closestAirport(analyzer,city)
+
+def shortestRoute(analyzer,first_airport,last_airport):
+    '''
+    Devuelve el camino más corto en kilómetros par air d eun aereopuerto a otro
+    '''
+    return model.shortestRoute(analyzer,first_airport,last_airport)

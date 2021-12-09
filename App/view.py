@@ -34,6 +34,7 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
+from haversine import haversine
 assert cf
 
 
@@ -171,7 +172,7 @@ while True:
             numvertex = controller.nor_dir_total_airports(analyzer)
             print(' - ' + 'Numero de aereopuertos en el grafo no dirigido: ' + str(numvertex) + '.')
             print(' - ' + 'Numero de rutas de vuelo en el grafo no dirigido: ' + str(numedges) + '.')
-            print(' - ' + 'El total de ciudades es de ' + str(mp.size(analyzer['ciudades'])) + '.')
+            print(' - ' + 'El total de ciudades es de ' + str(lt.size(analyzer['lt_cities'])) + '.')
 
             print(' - ' + 'El primer aereopueto cargado es el de', primeraereopuerto['Name'], 'de la ciudad de', primeraereopuerto['City'], 'de',
                   primeraereopuerto['Country'], 'de latitud', round(float(primeraereopuerto['Latitude']), 2), 'y longitud', str(round(float(primeraereopuerto['Longitude']), 2)) + '.')
@@ -196,8 +197,8 @@ while True:
             print('El número de aereopuertos conectados es de ' + str(controller.total_airports(analyzer)) + '\n')
             print('El número de aereopuertos en la red es de ' + str(mp.size(analyzer['IATA'])) )
 
-        # Si escoge la opción 6.
-        elif int(inputs[0]) == 3:
+        # Si escoge la opción 4.
+        elif int(inputs[0]) == 4:
 
             # Limpiar la consola.
             os.system('cls')
@@ -215,7 +216,7 @@ while True:
 
             if (lt.size(lt_ids) == 1):
                 id = lt.getElement(lt_ids, 1)
-                city = mp.get(mp_id, id)['value']
+                first_city = mp.get(mp_id, id)['value']
 
             else:
                 i = 1
@@ -224,7 +225,7 @@ while True:
                     city_name = city_info['city']
                     city_country = city_info['country']
 
-                    print(str(i) + ' - ' + city_name + "," + city_country)
+                    print(str(i) + ' - ' + city_name + ", " + city_country)
                     i += 1
                 
                 id = int(input('Por favor, digite el número de la ciudad que desea escoger:\n  ->'))
@@ -244,10 +245,35 @@ while True:
                     city_info = mp.get(mp_id, id)['value']
                     city_name = city_info['city']
                     city_country = city_info['country']
-                    print(str(i) + ' - ' + city_name + "," + city_country)
+                    print(str(i) + ' - ' + city_name + ", " + city_country)
                     i += 1
                 id = int(input('Por favor, digite el número de la ciudad que desea escoger:\n  ->'))
                 last_city = mp.get(mp_id, lt.getElement(lt_ids, id))['value']
+            first_airport = controller.closestAirport(analyzer,first_city)
+            last_airport = controller.closestAirport(analyzer,last_city)
+            route,distance = controller.shortestRoute(analyzer,first_airport,last_airport)
+            first_airport = mp.get(analyzer['IATA'],first_airport)['value']
+            last_airport = mp.get(analyzer['IATA'],last_airport)['value']
+            print('\nEl aereopuerto desde el que se va a partir es:',first_airport['Name'], 'de la ciudad de', first_airport['City'], 'de',
+                  first_airport['Country'],'con código IATA (',first_airport['IATA'],')\n')
+            print('El aereopuerto al que se va a llegar es:',last_airport['Name'], 'de la ciudad de', last_airport['City'], 'de',
+                  last_airport['Country'],'con código IATA (',last_airport['IATA'],')\n')
+            print('La distancia total de la ruta de viaje será de:',str(distance),'kilómetros de vuelo\n')
+            routeAirports = lt.newList(datastructure='ARRAY_LIST')      
+            print('Los arcos del camino más corto serán: \n')
+            for edge in lt.iterator(route):
+                lt.addLast(routeAirports,edge['vertexA'])
+                print('Aereopuerto de salida:',edge['vertexA'],'    Aereopuerto de llegada:',edge['vertexB'],'    Distancia del vuelo:',edge['weight'],)
+            lt.addLast(routeAirports,last_airport['IATA'])
+            print('\nLos paradas de toda la ruta serán:\n')
+            for airport in lt.iterator(routeAirports):
+                info = mp.get(analyzer['IATA'],airport)['value']
+                print('Nombre del aereopuerto:',info['Name'],'    Ciudad:',info['City'],'    País:',info['Country'],'    Código IATA:',info['IATA'],'\n')
+            fst_lat = float(first_airport['Latitude'])
+            lst_lat = float(last_airport['Latitude'])                  
+            fst_lng = float(first_airport['Longitude'])
+            lst_lng = float(last_airport['Longitude'])
+            print('La distancia total entre aereopuertos será de,',str(round(haversine((fst_lat,fst_lng),(lst_lat,lst_lng)),3)),'kilómetros, mientras que la distancia total entre ciudades será de',str(round(haversine((first_city['lat'],first_city['lng']),(last_city['lat'],last_city['lng'])),3)),'kilómetros.')
 
 
 

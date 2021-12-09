@@ -112,7 +112,7 @@ def loadaereopuertos(analyzer: dict) -> tuple:
         Se crea un vértice por cada aereopuerto en el archivo.
 
     """
-    aereopuertosfile = cf.data_dir + '\\Skylines\\airports-utf8-small.csv'
+    aereopuertosfile = cf.data_dir + '\\Skylines\\airports-utf8-5pct.csv'
     input_file = csv.DictReader(open(aereopuertosfile, encoding="utf-8"),
                                 delimiter=",")
     z = None
@@ -133,7 +133,7 @@ def loadrutas(analyzer: dict) -> dict:
         tienen una ruta en un sentido.
 
     """
-    rutasfile = cf.data_dir + '\\Skylines\\routes-utf8-small.csv'
+    rutasfile = cf.data_dir + '\\Skylines\\routes-utf8-5pct.csv'
     input_file = csv.DictReader(open(rutasfile, encoding="utf-8"),
                                 delimiter=",")
     for ruta in input_file:
@@ -144,7 +144,7 @@ def loadrutas(analyzer: dict) -> dict:
 
 def load_routes (analyzer: dict) -> None:
 
-    file = cf.data_dir + '\\Skylines\\routes-utf8-small.csv'
+    file = cf.data_dir + '\\Skylines\\routes-utf8-5pct.csv'
     input_file = csv.DictReader(open(file, encoding='utf-8'))
 
     for route in input_file:
@@ -254,6 +254,12 @@ def shortestRoute(analyzer,first_airport,last_airport):
     Devuelve el camino más corto en kilómetros par air d eun aereopuerto a otro
     '''
     return model.shortestRoute(analyzer,first_airport,last_airport)
+
+def MST(analyzer,IATA):
+    '''
+    Devuelve un grafo con el MST desde un vértice específico del grafo
+    '''
+    model.MST(analyzer,IATA)
 
 
 

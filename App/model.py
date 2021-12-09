@@ -36,6 +36,7 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import list as lt
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import prim
 from DISClib.Utils import error as error
 from haversine import haversine
 assert config
@@ -117,8 +118,6 @@ def new_analyzer ():
 
         analyzer['IATA'] = mp.newMap(maptype='PROBING', numelements=10000)
 
-        analyzer['cities_airports'] = mp.newMap(maptype='PROBING', numelements=9000)
-
         analyzer['connections'] = mp.newMap(maptype='PROBING')
 
         analyzer['routes'] = mp.newMap(numelements=9076,
@@ -166,9 +165,6 @@ def add_airport (analyzer: dict, airport: dict) -> dict:
     """
     mp.put(analyzer['IATA'], airport['IATA'], airport)
     mp.put(analyzer['NameAereopuertos'],airport['Name'],airport)    
-    if not mp.contains(analyzer['cities_airports'],airport['City']):
-        mp.put(analyzer['cities_airports'],airport['City'],lt.newList(datastructure='ARRAY_LIST'))
-    lt.addLast(me.getValue(mp.get(analyzer['cities_airports'],airport['City'])),airport)
     return analyzer
 
 
@@ -501,6 +497,31 @@ def shortestRoute(analyzer,first_airport,last_airport):
         lt.addFirst(finalRoute,edge)
         edge = mp.get(route['visited'],edge['vertexA'])['value']['edgeTo']
     return finalRoute,distance
+
+#Requerimiento 4
+def MST(analyzer,IATA):
+    '''
+    Crea un grafo para el MST del grafo original a partir de un vértice que llega por parámetro
+    '''
+    structure = prim.PrimMST(analyzer['bigrafo'])
+    structure = prim.prim(analyzer['bigrafo'],structure,IATA)
+    graph = gr.newGraph(datastructure = 'ADJ_LIST',
+                                      directed = False,
+                                      size = 9076,
+                                      comparefunction = compareStopIds)
+
+    for airport in lt.iterator(mp.keySet(structure['edgeTo'])):
+        vertexA = mp.get(structure['edgeTo'],airport)['value']['vertexA']
+        vertexB = mp.get(structure['edgeTo'],airport)['value']['vertexB']
+
+        if not gr.containsVertex(graph,vertexA):
+            gr.insertVertex(graph,vertexA)
+        if not gr.containsVertex(graph,vertexB):
+            gr.insertVertex(graph,vertexB)
+        if gr.getEdge(graph,vertexA,vertexB) == None:
+            gr.addEdge(graph,vertexA,vertexB,float(mp.get(structure['edgeTo'],airport)['value']['weight']))
+    print(gr.edges(graph))    
+    return graph
 
 
 

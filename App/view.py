@@ -305,6 +305,8 @@ while True:
                   round(float(last_city['lat']), 2), 'y longitud', str(round(float(last_city['lng']) ,2)) + '.')
 
         elif int(inputs[0]) == 2:
+            # Iniciar el tiempo.
+            start_time = time.process_time()
             interconnections = controller.interconnections(analyzer)
             print('Los 5 aereopuertos más conectados son: \n')
             for airport in lt.iterator(interconnections):
@@ -316,6 +318,12 @@ while True:
                 print('Nombre: ' + dicc['Name'] + '      Ciudad: ' + dicc['City'] + '      País: ' + dicc['Country'] + '      IATA: ' + airport + '      Conexiones: ' + str(connections) + '      Conexiones entrantes: ' + str(inbound) + '      Conexiones salientes: ' + str(outbound) + '\n')
             print('El número de aereopuertos conectados es de ' + str(controller.total_airports(analyzer)) + '\n')
             print('El número de aereopuertos en la red es de ' + str(mp.size(analyzer['IATA'])) )
+            # Parar el tiempo.
+            stop_time = time.process_time()
+
+            # Calcular tiempo de ejecución en milisegundos e imprimirlo.
+            elapsed_time_mseg = (stop_time - start_time) * 1000
+            print("Tiempo de ejecución del requerimiento:", elapsed_time_mseg, "milisegundos.\n")
 
         # Si escoge la opción 4.
         elif int(inputs[0]) == 4:
@@ -369,6 +377,10 @@ while True:
                     i += 1
                 id = int(input('Por favor, digite el número de la ciudad que desea escoger:\n  ->'))
                 last_city = mp.get(mp_id, lt.getElement(lt_ids, id))['value']
+            
+            # Iniciar el tiempo.
+            start_time = time.process_time()
+
             first_airport = controller.closestAirport(analyzer,first_city)
             last_airport = controller.closestAirport(analyzer,last_city)
             route,distance = controller.shortestRoute(analyzer,first_airport,last_airport)
@@ -394,6 +406,32 @@ while True:
             fst_lng = float(first_airport['Longitude'])
             lst_lng = float(last_airport['Longitude'])
             print('La distancia total entre aereopuertos será de,',str(round(haversine((fst_lat,fst_lng),(lst_lat,lst_lng)),3)),'kilómetros, mientras que la distancia total entre ciudades será de',str(round(haversine((first_city['lat'],first_city['lng']),(last_city['lat'],last_city['lng'])),3)),'kilómetros.')
+            # Parar el tiempo.
+            stop_time = time.process_time()
+
+            # Calcular tiempo de ejecución en milisegundos e imprimirlo.
+            elapsed_time_mseg = (stop_time - start_time) * 1000
+            print("Tiempo de ejecución del requerimiento:", elapsed_time_mseg, "milisegundos.\n")
+
+        # Si escoge la opción 5.
+        elif int(inputs[0]) == 5:
+            # Limpiar la consola.
+            os.system('cls')
+
+            # Imprimir mensaje de carga.
+            print("""\n======================= Inputs Req. 4 =======================\n""")
+
+             # Preguntar al usuario por inputs.
+            param_iata = input('Por favor, escriba el código IATA del aeropuerto inicial:\n  -> ')
+            available_miles = float(input('Por favor, escriba el número de millas disponibles:\n  -> '))
+
+            # Imprimir mensaje de carga.
+            print("""\n====================== Outputs Req. 4 =======================\n""")
+
+            # Iniciar el tiempo.
+            start_time = time.process_time()
+
+            GraphMST = controller.MST(analyzer,param_iata)
 
 
 

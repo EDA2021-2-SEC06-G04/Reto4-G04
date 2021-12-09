@@ -49,6 +49,7 @@ assert cf
     requerimiento, de tal forma que se dispongan de una manera amigable para el usuario.
 
 """
+sys.setrecursionlimit(2 ** 20)
 
 # Función que imprime el menú de opciones.
 def print_menu () -> None:
@@ -550,4 +551,7 @@ while True:
         print("Debe ingresar valores adecuados.\n\n")
         sys.exit(0)
 
+
+    
+    
 sys.exit(0)

@@ -86,7 +86,7 @@ def new_analyzer ():
         
 
         analyzer['bigrafo'] = gr.newGraph(datastructure = 'ADJ_LIST',
-                                      directed = True,
+                                      directed = False,
                                       size = 9076,
                                       comparefunction = compareStopIds)
 
@@ -164,7 +164,7 @@ def add_airport (analyzer: dict, airport: dict) -> dict:
             -> (dict): el analizador.
 
     """
-    mp.put(analyzer['IATA'],airport['IATA'],airport)
+    mp.put(analyzer['IATA'], airport['IATA'], airport)
     mp.put(analyzer['NameAereopuertos'],airport['Name'],airport)    
     if not mp.contains(analyzer['cities_airports'],airport['City']):
         mp.put(analyzer['cities_airports'],airport['City'],lt.newList(datastructure='ARRAY_LIST'))

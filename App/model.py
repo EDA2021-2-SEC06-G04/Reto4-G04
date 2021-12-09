@@ -387,6 +387,7 @@ def new_city (city_info: dict) -> dict:
     las estructuras.
 
 """
+
 #Consultas en al carga de datos
 def total_routes (analyzer: dict) -> int:
     """
@@ -503,6 +504,37 @@ def shortestRoute(analyzer,first_airport,last_airport):
 
 
 
+def req_5 (analyzer: dict, param_iata: str) -> dict:
+    """
+        Dado el código IATA de un aerpouerto, esta función retorna una lista con
+        los aeropuertos que se verían afectados en caso de que dicho saliera de funcionamiento.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+            -> param_IATA (str): código IATA del aeropuerto.
+
+        Retorno:
+            -> (dict): lista que contiene a los aeropuertos que se verían afectados.
+
+    """
+    
+    # Guardar el grafo 'bigrafo' y el mapa 'IATA'.
+    graph = analyzer['dirigido'] 
+    mp_iata = analyzer['IATA']
+
+    # Guardar lista de adyacencia del aeropuerto y crear lista de retorno.
+    lt_ady = gr.adjacents(graph, param_iata)
+    lt_return = lt.newList('ARRAY_LIST')
+
+    # Recorrer los IATA de lt_ady
+    for iata in lt.iterator(lt_ady):
+        # Obtener la info. del aeropuerto con código pararm_iata y añadirla a lt_return.
+        airport_info = mp.get(mp_iata, iata)['value'] 
+        lt.addLast(lt_return, airport_info) # 
+
+    return lt_return
+
+
 #####-----#####-----#####-----#####-----#####   #####---#######----#####   #####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####   FUNCIONES DE COMPARACIÓN   #####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####   #####---#######----#####   #####-----#####-----#####-----#####-----#####
@@ -554,3 +586,44 @@ def cmp_cities (city:dict, id: int) -> int:
     elif (id_city < id):
         ans = 1
     return ans
+
+
+
+
+#####-----#####-----#####-----#####-----#####-----#####   ####---#######---####   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   FUNCIONES ADICIONALES   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   ####---#######---####   #####-----#####-----#####-----#####-----#####-----#####
+
+"""
+    A continuación se definen funciones que serán de utilidad en general.
+
+"""
+
+def fixed_length (input, lenght: int) -> str:
+    """
+        Dada una cadena de caracteres, esta función permite recotrarla en caso de que
+        exceda la longitud necesario (especificada por el parámetro lenght), o adicionarle
+        espacios en caso de no ser igual a la longitud necescaria.
+
+        Parámetro:
+            -> text (str): cadena que se desea recortar.
+            -> lenght (int): longitud a la que se desea ajustar el texto.
+
+        Retorno:
+            -> (str): el texo ajustado a la longitud deseada.
+
+    """
+    
+    # Volver el input una cadena de caracteres.
+    text = str(input)
+
+    # Si el texto excede lenght.
+    if len(text) > lenght:
+        text = text[:lenght -3] + '...'
+    
+    # Si el texto es menor que lenght.
+    elif len(text) < lenght:
+        text = (text + " " * lenght)[:lenght]
+
+    # Retorno.
+    return(text)

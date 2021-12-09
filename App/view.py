@@ -72,6 +72,68 @@ def print_menu () -> None:
 
 
 
+def print_reqs (lt_print: dict) -> None:
+    # Imprimir header.
+    print("#" * 120)
+    print("# ", end = " ")
+    print(fixed_length('IATA', 4), end = " # ")
+    print(fixed_length('Name', 40), end = " # ")
+    print(fixed_length('City', 31), end = " # ")
+    print(fixed_length('Country', 31), end = " # ")
+    print()
+    print("#" * 120)
+
+    for element in lt.iterator(lt_print):
+        iata = element['IATA']
+        name = element['Name']
+        city = element['City']
+        country = element['Country']
+
+        print("# ", end = " ")
+        print(fixed_length(iata, 4), end = " # ")
+        print(fixed_length(name, 40), end = " # ")
+        print(fixed_length(city, 31), end = " # ")
+        print(fixed_length(country, 31), end = " # ")
+        print()
+
+
+
+def print_req_5 (lt_ady: dict, param_iata: str) -> None:
+    """
+        Esta función imprime la respuesta del requerimiento 5 de una manera amigable para el usuario.
+
+        Parámetros:
+            -> lt_ady (dict): lista de adyacencias.
+            -> param_iata (str): aeropuerto a consultar.
+
+        No tiene retorno.
+
+    """
+    size = lt.size(lt_ady)
+
+    print('En total, habrían', size, 'aeropuertos que se verían afectados en caso de que el aeropuerto',
+           param_iata, 'dejara de funcionar.')
+    print('Una muestra de la información de algunos de estos se dispone a continuación:\n')
+
+
+    if (size > 6):
+        new_lt = lt.newList('ARRAY_LIST')
+        lt.addLast(new_lt, lt.getElement(lt_ady, 1))
+        lt.addLast(new_lt, lt.getElement(lt_ady, 2))
+        lt.addLast(new_lt, lt.getElement(lt_ady, 3))
+        lt.addLast(new_lt, lt.getElement(lt_ady, size - 2))
+        lt.addLast(new_lt, lt.getElement(lt_ady, size - 1))
+        lt.addLast(new_lt, lt.getElement(lt_ady, size))
+        print_reqs(new_lt)
+
+    else:
+        print_reqs(lt_ady)
+    
+    print("#" * 120)
+    print()
+
+
+
 
 #####-----#####-----#####-----#####-----#####-----#####   ######---######---######   #####-----#####-----#####-----#####-----#####-----#####
 #####-----#####-----#####-----#####-----#####-----#####   FUNCIONES CARGA DE DATOS   #####-----#####-----#####-----#####-----#####-----#####
@@ -113,6 +175,64 @@ def load_data (analyzer: dict) -> None:
     """
     # Cargar los datos mediante la función homónima de controller.py.
     controller.load_data(analyzer)
+
+
+
+
+#####-----#####-----#####-----#####-----#####   ####---######----####   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   FUNCIONES DE CONSULTA   #####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####   ####---######----####   #####-----#####-----######-----####-----#####
+
+"""
+    Se define las funciones que permitirán acceder a información de interés de
+    las estructuras.
+
+"""
+
+def req_5 (analyzer: dict, param_iata: str) -> dict:
+    """
+        Dado el código IATA de un aerpouerto, esta función retorna una lista con
+        los aeropuertos que se verían afectados en caso de que dicho saliera de funcionamiento.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+            -> param_IATA (str): código IATA del aeropuerto.
+
+        Retorno:
+            -> (dict): lista que contiene a los aeropuertos que se verían afectados.
+
+    """
+    lt_return = controller.req_5(analyzer, param_iata)
+    return (lt_return)
+
+
+
+
+#####-----#####-----#####-----#####-----#####-----#####   ####---#######---####   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   FUNCIONES ADICIONALES   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   ####---#######---####   #####-----#####-----#####-----#####-----#####-----#####
+
+"""
+    A continuación se definen funciones que serán de utilidad en general.
+
+"""
+
+def fixed_length (input, lenght: int) -> str:
+    """
+        Dada una cadena de caracteres, esta función permite recotrarla en caso de que
+        exceda la longitud necesario (especificada por el parámetro lenght), o adicionarle
+        espacios en caso de no ser igual a la longitud necescaria.
+
+        Parámetro:
+            -> text (str): cadena que se desea recortar.
+            -> lenght (int): longitud a la que se desea ajustar el texto.
+
+        Retorno:
+            -> (str): el texo ajustado a la longitud deseada.
+
+    """
+    text = controller.fixed_length(input, lenght)
+    return text
 
 
 

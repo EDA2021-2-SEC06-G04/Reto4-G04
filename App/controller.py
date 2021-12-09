@@ -254,3 +254,50 @@ def shortestRoute(analyzer,first_airport,last_airport):
     Devuelve el camino más corto en kilómetros par air d eun aereopuerto a otro
     '''
     return model.shortestRoute(analyzer,first_airport,last_airport)
+
+
+
+def req_5 (analyzer: dict, param_iata: str) -> dict:
+    """
+        Dado el código IATA de un aerpouerto, esta función retorna una lista con
+        los aeropuertos que se verían afectados en caso de que dicho saliera de funcionamiento.
+
+        Parámetros:
+            -> analyzer (dict): analizador.
+            -> param_IATA (str): código IATA del aeropuerto.
+
+        Retorno:
+            -> (dict): lista que contiene a los aeropuertos que se verían afectados.
+
+    """
+    lt_return = model.req_5(analyzer, param_iata)
+    return (lt_return)
+
+
+
+
+#####-----#####-----#####-----#####-----#####-----#####   ####---#######---####   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   FUNCIONES ADICIONALES   #####-----#####-----#####-----#####-----#####-----#####
+#####-----#####-----#####-----#####-----#####-----#####   ####---#######---####   #####-----#####-----#####-----#####-----#####-----#####
+
+"""
+    A continuación se definen funciones que serán de utilidad en general.
+
+"""
+
+def fixed_length (input, lenght: int) -> str:
+    """
+        Dada una cadena de caracteres, esta función permite recotrarla en caso de que
+        exceda la longitud necesario (especificada por el parámetro lenght), o adicionarle
+        espacios en caso de no ser igual a la longitud necescaria.
+
+        Parámetro:
+            -> text (str): cadena que se desea recortar.
+            -> lenght (int): longitud a la que se desea ajustar el texto.
+
+        Retorno:
+            -> (str): el texo ajustado a la longitud deseada.
+
+    """
+    text = model.fixed_length(input, lenght)
+    return text
